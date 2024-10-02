@@ -230,24 +230,34 @@ library TexasPoker {
     /// @return weight The weight of the hand
     function getWeight(PokerCard[] memory hand) public returns (uint256) {
         uint8[] memory numbers = getNumbers(hand);
+
         (bool isRoyalFlushResult,) = isRoyalFlush(hand, numbers);
         if (isRoyalFlushResult) return type(uint256).max;
+
         (bool isStraightFlushResult, uint8 highestStraightFlush) = isStraightFlush(hand, numbers);
         if (isStraightFlushResult) return 1000 + highestStraightFlush;
+
         (bool isFourOfKindResult, uint8 highestFourOfKind) = isFourOfKind(numbers);
         if (isFourOfKindResult) return 900 + highestFourOfKind;
+
         (bool isFullHouseResult, uint8 highestFullHouse) = isFullHouse(numbers);
         if (isFullHouseResult) return 800 + highestFullHouse;
+
         (bool isFlushResult, uint8 highestFlush) = isFlush(hand, numbers);
         if (isFlushResult) return 700 + highestFlush;
+
         (bool isStraightResult, uint8 highestStraight) = isStraight(numbers);
         if (isStraightResult) return 600 + highestStraight;
+
         (bool isThreeOfKindResult, uint8 highestThreeOfKind) = isThreeOfKind(numbers);
         if (isThreeOfKindResult) return 500 + highestThreeOfKind;
+
         (bool isTwoPairResult, uint8 highestTwoPair) = isTwoPair(numbers);
         if (isTwoPairResult) return 400 + highestTwoPair;
+
         (bool isSinglePairResult,) = isSinglePair(numbers);
         if (isSinglePairResult) return 300;
+
         return numbers[HAND_SIZE - 1];
     }
 
