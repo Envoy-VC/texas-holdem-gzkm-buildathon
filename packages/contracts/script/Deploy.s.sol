@@ -2,7 +2,6 @@
 pragma solidity ^0.8.13;
 
 import {Script, console} from "forge-std/Script.sol";
-import {Counter} from "src/Counter.sol";
 
 contract DeployScript is Script {
     function setUp() public {}
@@ -14,9 +13,6 @@ contract DeployScript is Script {
 
         console.log("Deploying Counter with deployer address", deployerAddress);
 
-        Counter counter = new Counter(deployerAddress);
-
-        console.log("Deployed Counter at address: %s", address(counter));
         vm.stopBroadcast();
     }
 }
