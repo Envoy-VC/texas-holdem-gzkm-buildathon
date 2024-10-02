@@ -5,7 +5,7 @@ import {Test, console2 as console, Vm} from "forge-std/Test.sol";
 
 import {TexasPoker, CardType, CardSuit, PokerCard, Result} from "src/libraries/TexasPoker.sol";
 
-contract CounterTest is Test {
+contract TexasPokerTest is Test {
     function setUp() public virtual {}
 
     function test_RoyalFlush() public {

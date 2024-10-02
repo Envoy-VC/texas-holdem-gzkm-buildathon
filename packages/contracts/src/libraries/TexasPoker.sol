@@ -57,12 +57,10 @@ library TexasPoker {
     }
 
     /// @dev Checks if a hand is straight
-    /// @param hand The Cards for the player
+    /// @param numbers The number representation of the cards
     /// @return result Whether the hand is a straight
     /// @return highest The highest card in the straight
-    function isStraight(PokerCard[] memory hand) public returns (bool, uint8) {
-        uint8[] memory numbers = getNumbers(hand);
-
+    function isStraight(uint8[] memory numbers) public pure returns (bool, uint8) {
         bool result = true;
         for (uint8 i = 0; i < HAND_SIZE - 1; i++) {
             if (numbers[i + 1] - numbers[i] != 1) {
@@ -78,9 +76,7 @@ library TexasPoker {
     /// @param hand The Cards for the player
     /// @return result Whether the hand is a flush
     /// @return highest The highest card in the flush
-    function isFlush(PokerCard[] memory hand) public returns (bool, uint8) {
-        uint8[] memory numbers = getNumbers(hand);
-
+    function isFlush(PokerCard[] memory hand, uint8[] memory numbers) public pure returns (bool, uint8) {
         bool result = true;
 
         for (uint8 i = 0; i < HAND_SIZE - 1; i++) {
@@ -97,9 +93,9 @@ library TexasPoker {
     /// @param hand The Cards for the player
     /// @return result Whether the hand is a straight flush
     /// @return highest The highest card in the straight flush
-    function isStraightFlush(PokerCard[] memory hand) public returns (bool, uint8) {
-        (bool isStraightResult, uint8 highestStraight) = isStraight(hand);
-        (bool isFlushResult,) = isFlush(hand);
+    function isStraightFlush(PokerCard[] memory hand, uint8[] memory numbers) public pure returns (bool, uint8) {
+        (bool isStraightResult, uint8 highestStraight) = isStraight(numbers);
+        (bool isFlushResult,) = isFlush(hand, numbers);
 
         return (isStraightResult && isFlushResult, highestStraight);
     }
@@ -108,19 +104,18 @@ library TexasPoker {
     /// @param hand The Cards for the player
     /// @return result Whether the hand is a royal flush
     /// @return highest The highest card in the royal flush
-    function isRoyalFlush(PokerCard[] memory hand) public returns (bool, uint8) {
-        (bool isStraightFlushResult, uint8 highestStraightFlush) = isStraightFlush(hand);
+    function isRoyalFlush(PokerCard[] memory hand, uint8[] memory numbers) public pure returns (bool, uint8) {
+        (bool isStraightFlushResult, uint8 highestStraightFlush) = isStraightFlush(hand, numbers);
 
         return (isStraightFlushResult && highestStraightFlush == 14, 14);
     }
 
     /// @dev Checks if there is any card that appears t times in the hand
-    /// @param hand The Cards for the player
+    /// @param numbers The number representation of the cards
     /// @param t The number of times a card should appear
     /// @return result Whether there is a card that appears t times
     /// @return max The card that appears t times
-    function times(PokerCard[] memory hand, uint8 t) public returns (bool, uint8) {
-        uint8[] memory numbers = getNumbers(hand);
+    function times(uint8 t, uint8[] memory numbers) public pure returns (bool, uint8) {
         uint8[15] memory occurencies;
 
         for (uint8 i = 0; i < HAND_SIZE; i++) {
@@ -140,27 +135,26 @@ library TexasPoker {
     }
 
     /// @dev Checks if a hand is four-of-kind
-    /// @param hand The Cards for the player
+    /// @param numbers The number representation of the cards
     /// @return result Whether the hand is four-of-kind
     /// @return max The card that appears four times
-    function isFourOfKind(PokerCard[] memory hand) public returns (bool, uint8) {
-        return times(hand, 4);
+    function isFourOfKind(uint8[] memory numbers) public pure returns (bool, uint8) {
+        return times(4, numbers);
     }
 
     /// @dev Checks if a hand is three-of-kind
-    /// @param hand The Cards for the player
+    /// @param numbers The number representation of the cards
     /// @return result Whether the hand is three-of-kind
     /// @return max The card that appears three times
-    function isThreeOfKind(PokerCard[] memory hand) public returns (bool, uint8) {
-        return times(hand, 3);
+    function isThreeOfKind(uint8[] memory numbers) public pure returns (bool, uint8) {
+        return times(3, numbers);
     }
 
     /// @dev Checks if a hand is a full house
-    /// @param hand The Cards for the player
+    /// @param numbers The number representation of the cards
     /// @return result Whether the hand is a full house
     /// @return max The card that appears three times
-    function isFullHouse(PokerCard[] memory hand) public returns (bool, uint8) {
-        uint8[] memory numbers = getNumbers(hand);
+    function isFullHouse(uint8[] memory numbers) public pure returns (bool, uint8) {
         uint8[15] memory occurencies;
 
         for (uint8 i = 0; i < HAND_SIZE; i++) {
@@ -185,11 +179,10 @@ library TexasPoker {
     }
 
     /// @dev Checks if a hand is two pair
-    /// @param hand The Cards for the player
+    /// @param numbers The number representation of the cards
     /// @return result Whether the hand is two pair
     /// @return max The highest card in the two pair
-    function isTwoPair(PokerCard[] memory hand) public returns (bool, uint8) {
-        uint8[] memory numbers = getNumbers(hand);
+    function isTwoPair(uint8[] memory numbers) public pure returns (bool, uint8) {
         uint8[15] memory occurencies;
 
         for (uint8 i = 0; i < HAND_SIZE; i++) {
@@ -209,11 +202,10 @@ library TexasPoker {
     }
 
     /// @dev Checks if a hand is a single pair
-    /// @param hand The Cards for the player
+    /// @param numbers The number representation of the cards
     /// @return result Whether the hand is a single pair
     /// @return max The highest card in the single pair
-    function isSinglePair(PokerCard[] memory hand) public returns (bool, uint8) {
-        uint8[] memory numbers = getNumbers(hand);
+    function isSinglePair(uint8[] memory numbers) public pure returns (bool, uint8) {
         uint8[15] memory occurencies;
 
         for (uint8 i = 0; i < HAND_SIZE; i++) {
@@ -237,25 +229,25 @@ library TexasPoker {
     /// @param hand The Cards for the player
     /// @return weight The weight of the hand
     function getWeight(PokerCard[] memory hand) public returns (uint256) {
-        (bool isRoyalFlushResult,) = isRoyalFlush(hand);
-        if (isRoyalFlushResult) return type(uint256).max;
-        (bool isStraightFlushResult, uint8 highestStraightFlush) = isStraightFlush(hand);
-        if (isStraightFlushResult) return 1000 + highestStraightFlush;
-        (bool isFourOfKindResult, uint8 highestFourOfKind) = isFourOfKind(hand);
-        if (isFourOfKindResult) return 900 + highestFourOfKind;
-        (bool isFullHouseResult, uint8 highestFullHouse) = isFullHouse(hand);
-        if (isFullHouseResult) return 800 + highestFullHouse;
-        (bool isFlushResult, uint8 highestFlush) = isFlush(hand);
-        if (isFlushResult) return 700 + highestFlush;
-        (bool isStraightResult, uint8 highestStraight) = isStraight(hand);
-        if (isStraightResult) return 600 + highestStraight;
-        (bool isThreeOfKindResult, uint8 highestThreeOfKind) = isThreeOfKind(hand);
-        if (isThreeOfKindResult) return 500 + highestThreeOfKind;
-        (bool isTwoPairResult, uint8 highestTwoPair) = isTwoPair(hand);
-        if (isTwoPairResult) return 400 + highestTwoPair;
-        (bool isSinglePairResult,) = isSinglePair(hand);
-        if (isSinglePairResult) return 300;
         uint8[] memory numbers = getNumbers(hand);
+        (bool isRoyalFlushResult,) = isRoyalFlush(hand, numbers);
+        if (isRoyalFlushResult) return type(uint256).max;
+        (bool isStraightFlushResult, uint8 highestStraightFlush) = isStraightFlush(hand, numbers);
+        if (isStraightFlushResult) return 1000 + highestStraightFlush;
+        (bool isFourOfKindResult, uint8 highestFourOfKind) = isFourOfKind(numbers);
+        if (isFourOfKindResult) return 900 + highestFourOfKind;
+        (bool isFullHouseResult, uint8 highestFullHouse) = isFullHouse(numbers);
+        if (isFullHouseResult) return 800 + highestFullHouse;
+        (bool isFlushResult, uint8 highestFlush) = isFlush(hand, numbers);
+        if (isFlushResult) return 700 + highestFlush;
+        (bool isStraightResult, uint8 highestStraight) = isStraight(numbers);
+        if (isStraightResult) return 600 + highestStraight;
+        (bool isThreeOfKindResult, uint8 highestThreeOfKind) = isThreeOfKind(numbers);
+        if (isThreeOfKindResult) return 500 + highestThreeOfKind;
+        (bool isTwoPairResult, uint8 highestTwoPair) = isTwoPair(numbers);
+        if (isTwoPairResult) return 400 + highestTwoPair;
+        (bool isSinglePairResult,) = isSinglePair(numbers);
+        if (isSinglePairResult) return 300;
         return numbers[HAND_SIZE - 1];
     }
 
