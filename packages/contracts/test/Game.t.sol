@@ -18,16 +18,24 @@ contract GameTest is Test {
     Vm.Wallet public alice;
     Vm.Wallet public bob;
 
+    // Fork Tests
+    uint256 opBNBTestnetFork;
+
     function setUp() public virtual {
         alice = vm.createWallet("alice");
         bob = vm.createWallet("bob");
+        string memory RPC = vm.envString("OP_BNB_TESTNET_RPC");
+        opBNBTestnetFork = vm.createFork(RPC);
 
-        address revealVerifier = address(0);
-        address shuffleVerifier = address(0);
+        vm.selectFork(opBNBTestnetFork);
+
+        address revealVerifier = address(0x8d084e5c212834456c07Cef2c1e2a258fF04b5eb);
+        address shuffleVerifier = address(0xfbDF4217a3959cE4D3c39b240959c800e3c9E640);
 
         Player memory alicePlayer = Player({addr: alice.addr, publicKey: Point({x: 0, y: 0})});
 
         game = new Game(revealVerifier, shuffleVerifier, alicePlayer);
+        console.log("Game Contract Deployed: ", address(game));
     }
 
     function currentRound() internal view returns (string memory) {
@@ -116,6 +124,7 @@ contract GameTest is Test {
     }
 
     function test_UserFlow() public {
+        vm.selectFork(opBNBTestnetFork);
         printStats();
 
         // Add Bob as player
