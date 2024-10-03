@@ -8,6 +8,14 @@ struct Player {
     Point publicKey;
 }
 
+enum GameRound {
+    Ante,
+    PreFlop,
+    Flop,
+    Turn,
+    River
+}
+
 interface IGame {
     error NotEnoughPlayers();
     error GameAlreadyStarted();
@@ -17,4 +25,8 @@ interface IGame {
 
     error InvalidBetAmount();
     error InvalidBetSequence();
+
+    error LastRound();
+
+    error AlreadyFolded();
 }
