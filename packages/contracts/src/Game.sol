@@ -1,42 +1,60 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.26;
 
-import {IGame} from "./interfaces/IGame.sol";
+import {IGame, Player} from "./interfaces/IGame.sol";
 import {ZgRevealVerifier, ZgShuffleVerifier, MaskedCard, Point} from "./secret-engine/Verifiers.sol";
 
-contract Game is IGame {
+// Modules
+import {Shuffle} from "./modules/Shuffle.sol";
+
+contract Game is IGame, Shuffle {
+    /// =================================================================
+    ///                         State Variables
+    /// =================================================================
+
     mapping(uint256 => Player) public _players;
+    mapping(address => bool) public _isPlayer;
     uint8 public _totalPlayers;
-    Point public gameKey;
+
+    mapping(address => uint256) public _bets;
+    uint8 public _nextBet;
 
     bool _gameStarted;
 
-    ZgRevealVerifier public revealVerifier;
-    ZgShuffleVerifier public shuffleVerifier;
-
-    uint256[4][] public deck;
-    uint256[] public publicKeyCommitment;
-
-    mapping(uint256 => RevealToken[]) public _revealTokens;
+    /// =================================================================
+    ///                         Constructor
+    /// =================================================================
 
     constructor(address _revealVerifier, address _shuffleVerifier, Player memory _initialPlayer) {
         _players[_totalPlayers] = _initialPlayer;
-        _totalPlayers++;
         revealVerifier = ZgRevealVerifier(_revealVerifier);
         shuffleVerifier = ZgShuffleVerifier(_shuffleVerifier);
+        _totalPlayers++;
+        _isPlayer[_initialPlayer.addr] = true;
     }
 
-    function onlyPlayer(address _player) internal view {
-        bool isPlayer = false;
-        for (uint8 i = 0; i < _totalPlayers; i++) {
-            if (_players[i].addr == _player) {
-                isPlayer = true;
-            }
-        }
+    /// =================================================================
+    ///                         Modifiers
+    /// =================================================================
 
-        if (!isPlayer) {
+    modifier onlyPlayer(address _player) {
+        if (!_isPlayer[_player]) {
             revert NotAPlayer();
         }
+        _;
+    }
+
+    /// =================================================================
+    ///                         Write Functions
+    /// =================================================================
+
+    function joinGame(Player memory _player) public {
+        if (_isPlayer[_player.addr]) {
+            revert AlreadyAPlayer();
+        }
+        _players[_totalPlayers] = _player;
+        _totalPlayers++;
+        _isPlayer[_player.addr] = true;
     }
 
     function startGame() public {
@@ -59,84 +77,12 @@ contract Game is IGame {
         uint256[4][52] calldata _oldDeck,
         uint256[4][52] calldata _newDeck,
         bytes calldata _proof
-    ) public {
-        onlyPlayer(msg.sender);
-        if (deck.length != 0) {
-            revert AlreadyShuffled();
-        }
-
-        publicKeyCommitment = _publicKeyCommitment;
-        uint256[] memory input = new uint256[](52 * 4 * 2);
-
-        for (uint8 i = 0; i < 52; i++) {
-            input[i * 4 + 0] = _oldDeck[i][0];
-            input[i * 4 + 1] = _oldDeck[i][1];
-            input[i * 4 + 2] = _oldDeck[i][2];
-            input[i * 4 + 3] = _oldDeck[i][3];
-
-            input[i * 4 + 0 + 208] = _newDeck[i][0];
-            input[i * 4 + 1 + 208] = _newDeck[i][1];
-            input[i * 4 + 2 + 208] = _newDeck[i][2];
-            input[i * 4 + 3 + 208] = _newDeck[i][3];
-        }
-
-        bool verified = shuffleVerifier.verifyShuffle(_proof, input, _publicKeyCommitment);
-
-        if (!verified) {
-            revert ShuffleVerificationError();
-        }
-
-        deck = _newDeck;
+    ) public onlyPlayer(msg.sender) {
+        _initShuffle(_publicKeyCommitment, _oldDeck, _newDeck, _proof);
     }
 
-    function shuffle(uint256[4][52] calldata _newDeck, bytes calldata _proof) public {
-        onlyPlayer(msg.sender);
-        require(deck.length == 52);
-
-        uint256[] memory input = new uint256[](52 * 4 * 2);
-
-        for (uint8 i = 0; i < 52; i++) {
-            input[i * 4 + 0] = deck[i][0];
-            input[i * 4 + 1] = deck[i][1];
-            input[i * 4 + 2] = deck[i][2];
-            input[i * 4 + 3] = deck[i][3];
-
-            input[i * 4 + 0 + 208] = _newDeck[i][0];
-            input[i * 4 + 1 + 208] = _newDeck[i][1];
-            input[i * 4 + 2 + 208] = _newDeck[i][2];
-            input[i * 4 + 3 + 208] = _newDeck[i][3];
-        }
-
-        bool verified = ZgShuffleVerifier(shuffleVerifier).verifyShuffle(_proof, input, publicKeyCommitment);
-
-        if (!verified) {
-            revert ShuffleVerificationError();
-        }
-
-        deck = _newDeck;
-    }
-
-    function getPlayer(address addr) public view returns (Player memory) {
-        Player memory player;
-        for (uint8 i = 0; i < _totalPlayers; i++) {
-            if (_players[i].addr == addr) {
-                player = _players[i];
-            }
-        }
-
-        return player;
-    }
-
-    function addRevealToken(uint8 index, RevealToken memory token) internal {
-        // check if there exists another reveal token from the same player
-        RevealToken[] memory revealTokens = _revealTokens[index];
-        for (uint8 i = 0; i < revealTokens.length; i++) {
-            if (revealTokens[i].player == token.player) {
-                revert RevealTokenAlreadyExists();
-            }
-        }
-
-        _revealTokens[index].push(token);
+    function shuffle(uint256[4][52] calldata _newDeck, bytes calldata _proof) public onlyPlayer(msg.sender) {
+        _shuffle(_newDeck, _proof);
     }
 
     function addRevealToken(uint8 index, RevealToken calldata revealToken, uint256[8] calldata proof) public {
@@ -145,44 +91,45 @@ contract Game is IGame {
             revert NotAPlayer();
         }
 
-        bool success = ZgRevealVerifier(revealVerifier).verifyRevealWithSnark(
-            [
-                deck[index][2],
-                deck[index][3],
-                revealToken.token.x,
-                revealToken.token.y,
-                player.publicKey.x,
-                player.publicKey.y
-            ],
-            proof
-        );
-
-        if (!success) {
-            revert RevealTokenVerificationError();
-        }
-
-        addRevealToken(index, revealToken);
+        _addRevealToken(index, revealToken, proof, player);
     }
 
-    function getRevealTokens(uint8 index) public view returns (Point[] memory) {
-        RevealToken[] memory allTokens = _revealTokens[index];
-        uint256 newLength = allTokens.length - 1;
-        Point[] memory _newTokens = new Point[](newLength);
+    function addMultipleRevealTokens(uint8[] memory indexes, RevealToken[] calldata revealTokens)
+        public
+        onlyPlayer(msg.sender)
+    {
+        _addMultipleRevealTokens(indexes, revealTokens);
+    }
 
-        for (uint8 i = 0; i < allTokens.length; i++) {
-            if (allTokens[i].player != msg.sender) {
-                _newTokens[i] = allTokens[i].token;
+    function addBet(uint256 _amount) public onlyPlayer(msg.sender) {
+        Player memory player = _players[_nextBet];
+
+        if (player.addr != msg.sender) {
+            revert InvalidBetSequence();
+        }
+
+        if (_nextBet == _totalPlayers - 1) {
+            _nextBet = 0;
+            // TODO: Round Complete Start New Round
+        } else {
+            _nextBet++;
+        }
+        _bets[msg.sender] = _amount;
+
+        // get next bet if more than total player make it 0
+    }
+
+    /// =================================================================
+    ///                         View Functions
+    /// =================================================================
+
+    function getPlayer(address addr) public view returns (Player memory) {
+        Player memory player;
+        for (uint8 i = 0; i < _totalPlayers; i++) {
+            if (_players[i].addr == addr) {
+                player = _players[i];
             }
         }
-
-        return _newTokens;
-    }
-
-    function revealCard(uint8 index) public view returns (uint8) {
-        Point[] memory rTokens = getRevealTokens(index);
-        uint8 cardId = revealVerifier.unmaskCard(
-            MaskedCard(deck[index][0], deck[index][1], deck[index][2], deck[index][3]), rTokens
-        );
-        return cardId;
+        return player;
     }
 }

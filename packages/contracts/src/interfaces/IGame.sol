@@ -3,24 +3,18 @@ pragma solidity ^0.8.26;
 
 import {Point} from "../secret-engine/Verifiers.sol";
 
+struct Player {
+    address addr;
+    Point publicKey;
+}
+
 interface IGame {
     error NotEnoughPlayers();
     error GameAlreadyStarted();
     error GameNotStarted();
     error NotAPlayer();
+    error AlreadyAPlayer();
 
-    error AlreadyShuffled();
-    error ShuffleVerificationError();
-    error RevealTokenVerificationError();
-    error RevealTokenAlreadyExists();
-
-    struct Player {
-        address addr;
-        Point publicKey;
-    }
-
-    struct RevealToken {
-        address player;
-        Point token;
-    }
+    error InvalidBetAmount();
+    error InvalidBetSequence();
 }
