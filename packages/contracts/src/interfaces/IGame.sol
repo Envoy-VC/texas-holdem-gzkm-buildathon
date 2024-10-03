@@ -7,7 +7,9 @@ interface IGame {
     error NotEnoughPlayers();
     error GameAlreadyStarted();
     error GameNotStarted();
+    error NotAPlayer();
 
+    error AlreadyShuffled();
     error ShuffleVerificationError();
     error RevealTokenVerificationError();
     error RevealTokenAlreadyExists();

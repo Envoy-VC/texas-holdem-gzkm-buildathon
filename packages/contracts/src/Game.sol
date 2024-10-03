@@ -26,6 +26,19 @@ contract Game is IGame {
         shuffleVerifier = ZgShuffleVerifier(_shuffleVerifier);
     }
 
+    function onlyPlayer(address _player) internal view {
+        bool isPlayer = false;
+        for (uint8 i = 0; i < _totalPlayers; i++) {
+            if (_players[i].addr == _player) {
+                isPlayer = true;
+            }
+        }
+
+        if (!isPlayer) {
+            revert NotAPlayer();
+        }
+    }
+
     function startGame() public {
         if (_gameStarted) {
             revert GameAlreadyStarted();
@@ -47,7 +60,11 @@ contract Game is IGame {
         uint256[4][52] calldata _newDeck,
         bytes calldata _proof
     ) public {
-        require(deck.length == 0);
+        onlyPlayer(msg.sender);
+        if (deck.length != 0) {
+            revert AlreadyShuffled();
+        }
+
         publicKeyCommitment = _publicKeyCommitment;
         uint256[] memory input = new uint256[](52 * 4 * 2);
 
@@ -73,6 +90,7 @@ contract Game is IGame {
     }
 
     function shuffle(uint256[4][52] calldata _newDeck, bytes calldata _proof) public {
+        onlyPlayer(msg.sender);
         require(deck.length == 52);
 
         uint256[] memory input = new uint256[](52 * 4 * 2);
@@ -123,6 +141,10 @@ contract Game is IGame {
 
     function addRevealToken(uint8 index, RevealToken calldata revealToken, uint256[8] calldata proof) public {
         Player memory player = getPlayer(msg.sender);
+        if (player.addr == address(0)) {
+            revert NotAPlayer();
+        }
+
         bool success = ZgRevealVerifier(revealVerifier).verifyRevealWithSnark(
             [
                 deck[index][2],
