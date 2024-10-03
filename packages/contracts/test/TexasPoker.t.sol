@@ -10,7 +10,7 @@ contract TexasPokerTest is Test {
 
     function test_RoyalFlush() public {
         // AS KS QS JS TS
-        PokerCard[] memory hand = new PokerCard[](5);
+        PokerCard[5] memory hand;
         hand[0] = PokerCard(CardType.Ace, CardSuit.Spade);
         hand[1] = PokerCard(CardType.King, CardSuit.Spade);
         hand[2] = PokerCard(CardType.Queen, CardSuit.Spade);
@@ -23,7 +23,7 @@ contract TexasPokerTest is Test {
 
     function test_StraightFlush() public {
         // TS 9S 8S 7S 6S
-        PokerCard[] memory hand = new PokerCard[](5);
+        PokerCard[5] memory hand;
         hand[0] = PokerCard(CardType.Ten, CardSuit.Spade);
         hand[1] = PokerCard(CardType.Nine, CardSuit.Spade);
         hand[2] = PokerCard(CardType.Eight, CardSuit.Spade);
@@ -36,7 +36,7 @@ contract TexasPokerTest is Test {
 
     function test_FourOfAKind() public {
         // JD JC JS JH KD
-        PokerCard[] memory hand = new PokerCard[](5);
+        PokerCard[5] memory hand;
         hand[0] = PokerCard(CardType.Jack, CardSuit.Diamond);
         hand[1] = PokerCard(CardType.Jack, CardSuit.Club);
         hand[2] = PokerCard(CardType.Jack, CardSuit.Spade);
@@ -49,7 +49,7 @@ contract TexasPokerTest is Test {
 
     function test_FullHouse() public {
         // AH AC AD 9S 9C
-        PokerCard[] memory hand = new PokerCard[](5);
+        PokerCard[5] memory hand;
         hand[0] = PokerCard(CardType.Ace, CardSuit.Heart);
         hand[1] = PokerCard(CardType.Ace, CardSuit.Club);
         hand[2] = PokerCard(CardType.Ace, CardSuit.Diamond);
@@ -62,7 +62,7 @@ contract TexasPokerTest is Test {
 
     function test_Flush() public {
         // AS JS 8S 4S 3S
-        PokerCard[] memory hand = new PokerCard[](5);
+        PokerCard[5] memory hand;
         hand[0] = PokerCard(CardType.Ace, CardSuit.Spade);
         hand[1] = PokerCard(CardType.Jack, CardSuit.Spade);
         hand[2] = PokerCard(CardType.Eight, CardSuit.Spade);
@@ -75,7 +75,7 @@ contract TexasPokerTest is Test {
 
     function test_Straight() public {
         // 9H 8S 7C 6D 5C
-        PokerCard[] memory hand = new PokerCard[](5);
+        PokerCard[5] memory hand;
         hand[0] = PokerCard(CardType.Nine, CardSuit.Heart);
         hand[1] = PokerCard(CardType.Eight, CardSuit.Spade);
         hand[2] = PokerCard(CardType.Seven, CardSuit.Club);
@@ -88,7 +88,7 @@ contract TexasPokerTest is Test {
 
     function test_ThreeOfAKind() public {
         // 7S 7D 7C KD QC
-        PokerCard[] memory hand = new PokerCard[](5);
+        PokerCard[5] memory hand;
         hand[0] = PokerCard(CardType.Seven, CardSuit.Spade);
         hand[1] = PokerCard(CardType.Seven, CardSuit.Diamond);
         hand[2] = PokerCard(CardType.Seven, CardSuit.Club);
@@ -101,7 +101,7 @@ contract TexasPokerTest is Test {
 
     function test_TwoPair() public {
         // 9C 9D 6C 6S QH
-        PokerCard[] memory hand = new PokerCard[](5);
+        PokerCard[5] memory hand;
         hand[0] = PokerCard(CardType.Nine, CardSuit.Club);
         hand[1] = PokerCard(CardType.Nine, CardSuit.Diamond);
         hand[2] = PokerCard(CardType.Six, CardSuit.Club);
@@ -114,7 +114,7 @@ contract TexasPokerTest is Test {
 
     function test_OnePair() public {
         // AD AH KS 9D 4H
-        PokerCard[] memory hand = new PokerCard[](5);
+        PokerCard[5] memory hand;
         hand[0] = PokerCard(CardType.Ace, CardSuit.Diamond);
         hand[1] = PokerCard(CardType.Ace, CardSuit.Heart);
         hand[2] = PokerCard(CardType.King, CardSuit.Spade);
@@ -127,7 +127,7 @@ contract TexasPokerTest is Test {
 
     function test_HighCard() public {
         // AS JD 8C 6S 2H
-        PokerCard[] memory hand = new PokerCard[](5);
+        PokerCard[5] memory hand;
         hand[0] = PokerCard(CardType.Ace, CardSuit.Spade);
         hand[1] = PokerCard(CardType.Jack, CardSuit.Diamond);
         hand[2] = PokerCard(CardType.Eight, CardSuit.Club);
@@ -140,7 +140,7 @@ contract TexasPokerTest is Test {
 
     function test_Tie() public {
         // AS KS QS JS TS
-        PokerCard[] memory hand1 = new PokerCard[](5);
+        PokerCard[5] memory hand1;
         hand1[0] = PokerCard(CardType.Ace, CardSuit.Spade);
         hand1[1] = PokerCard(CardType.King, CardSuit.Spade);
         hand1[2] = PokerCard(CardType.Queen, CardSuit.Spade);
@@ -148,7 +148,7 @@ contract TexasPokerTest is Test {
         hand1[4] = PokerCard(CardType.Ten, CardSuit.Spade);
 
         // AS KS QS JS TS
-        PokerCard[] memory hand2 = new PokerCard[](5);
+        PokerCard[5] memory hand2;
         hand2[0] = PokerCard(CardType.Ace, CardSuit.Spade);
         hand2[1] = PokerCard(CardType.King, CardSuit.Spade);
         hand2[2] = PokerCard(CardType.Queen, CardSuit.Spade);
@@ -161,7 +161,7 @@ contract TexasPokerTest is Test {
 
     function test_Win() public {
         // AS KS QS JS TS
-        PokerCard[] memory hand1 = new PokerCard[](5);
+        PokerCard[5] memory hand1;
         hand1[0] = PokerCard(CardType.Ace, CardSuit.Spade);
         hand1[1] = PokerCard(CardType.King, CardSuit.Spade);
         hand1[2] = PokerCard(CardType.Queen, CardSuit.Spade);
@@ -169,7 +169,7 @@ contract TexasPokerTest is Test {
         hand1[4] = PokerCard(CardType.Ten, CardSuit.Spade);
 
         // 9S 9H 9D 9C 8S
-        PokerCard[] memory hand2 = new PokerCard[](5);
+        PokerCard[5] memory hand2;
         hand2[0] = PokerCard(CardType.Nine, CardSuit.Spade);
         hand2[1] = PokerCard(CardType.Nine, CardSuit.Heart);
         hand2[2] = PokerCard(CardType.Nine, CardSuit.Diamond);
@@ -182,7 +182,7 @@ contract TexasPokerTest is Test {
 
     function test_Loss() public {
         // 9S 9H 9D 9C 8S
-        PokerCard[] memory hand1 = new PokerCard[](5);
+        PokerCard[5] memory hand1;
         hand1[0] = PokerCard(CardType.Nine, CardSuit.Spade);
         hand1[1] = PokerCard(CardType.Nine, CardSuit.Heart);
         hand1[2] = PokerCard(CardType.Nine, CardSuit.Diamond);
@@ -190,7 +190,7 @@ contract TexasPokerTest is Test {
         hand1[4] = PokerCard(CardType.Eight, CardSuit.Spade);
 
         // AS KS QS JS TS
-        PokerCard[] memory hand2 = new PokerCard[](5);
+        PokerCard[5] memory hand2;
         hand2[0] = PokerCard(CardType.Ace, CardSuit.Spade);
         hand2[1] = PokerCard(CardType.King, CardSuit.Spade);
         hand2[2] = PokerCard(CardType.Queen, CardSuit.Spade);

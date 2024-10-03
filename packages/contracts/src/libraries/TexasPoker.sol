@@ -42,7 +42,7 @@ library TexasPoker {
 
     error InvalidHandSize();
 
-    function getNumbers(PokerCard[] memory hand) public returns (uint8[] memory) {
+    function getNumbers(PokerCard[5] memory hand) public returns (uint8[] memory) {
         if (hand.length != HAND_SIZE) {
             revert InvalidHandSize();
         }
@@ -76,7 +76,7 @@ library TexasPoker {
     /// @param hand The Cards for the player
     /// @return result Whether the hand is a flush
     /// @return highest The highest card in the flush
-    function isFlush(PokerCard[] memory hand, uint8[] memory numbers) public pure returns (bool, uint8) {
+    function isFlush(PokerCard[5] memory hand, uint8[] memory numbers) public pure returns (bool, uint8) {
         bool result = true;
 
         for (uint8 i = 0; i < HAND_SIZE - 1; i++) {
@@ -93,7 +93,7 @@ library TexasPoker {
     /// @param hand The Cards for the player
     /// @return result Whether the hand is a straight flush
     /// @return highest The highest card in the straight flush
-    function isStraightFlush(PokerCard[] memory hand, uint8[] memory numbers) public pure returns (bool, uint8) {
+    function isStraightFlush(PokerCard[5] memory hand, uint8[] memory numbers) public pure returns (bool, uint8) {
         (bool isStraightResult, uint8 highestStraight) = isStraight(numbers);
         (bool isFlushResult,) = isFlush(hand, numbers);
 
@@ -104,7 +104,7 @@ library TexasPoker {
     /// @param hand The Cards for the player
     /// @return result Whether the hand is a royal flush
     /// @return highest The highest card in the royal flush
-    function isRoyalFlush(PokerCard[] memory hand, uint8[] memory numbers) public pure returns (bool, uint8) {
+    function isRoyalFlush(PokerCard[5] memory hand, uint8[] memory numbers) public pure returns (bool, uint8) {
         (bool isStraightFlushResult, uint8 highestStraightFlush) = isStraightFlush(hand, numbers);
 
         return (isStraightFlushResult && highestStraightFlush == 14, 14);
@@ -228,7 +228,7 @@ library TexasPoker {
     /// @dev Get the weight of a hand
     /// @param hand The Cards for the player
     /// @return weight The weight of the hand
-    function getWeight(PokerCard[] memory hand) public returns (uint256) {
+    function getWeight(PokerCard[5] memory hand) public returns (uint256) {
         uint8[] memory numbers = getNumbers(hand);
 
         (bool isRoyalFlushResult,) = isRoyalFlush(hand, numbers);
@@ -265,7 +265,7 @@ library TexasPoker {
     /// @param player1Hand The Cards for the first player
     /// @param player2Hand The Cards for the second player
     /// @return result The result of the comparison with respect to the first player
-    function compare(PokerCard[] memory player1Hand, PokerCard[] memory player2Hand) public returns (Result) {
+    function compare(PokerCard[5] memory player1Hand, PokerCard[5] memory player2Hand) public returns (Result) {
         uint256 ourWeight = getWeight(player1Hand);
         uint256 opponentWeight = getWeight(player2Hand);
 
@@ -285,5 +285,24 @@ library TexasPoker {
             }
             return Result.Tie;
         }
+    }
+
+    function toPokerCard(uint8 number) public pure returns (PokerCard memory) {
+        uint8 cardType = number % 13;
+        uint8 cardSuit = number / 13;
+
+        PokerCard memory card = PokerCard(CardType(cardType), CardSuit(cardSuit));
+
+        return card;
+    }
+
+    function toPokerCards(uint8[5] memory numbers) public pure returns (PokerCard[5] memory) {
+        PokerCard[5] memory cards;
+
+        for (uint8 i = 0; i < 5; i++) {
+            cards[i] = toPokerCard(numbers[i]);
+        }
+
+        return cards;
     }
 }

@@ -4,6 +4,8 @@ pragma solidity ^0.8.26;
 import {IGame, Player, GameRound} from "./interfaces/IGame.sol";
 import {ZgRevealVerifier, ZgShuffleVerifier, MaskedCard, Point} from "./secret-engine/Verifiers.sol";
 
+import {TexasPoker, PokerCard} from "./libraries/TexasPoker.sol";
+
 // Modules
 import {Shuffle} from "./modules/Shuffle.sol";
 
@@ -15,6 +17,8 @@ contract Game is IGame, Shuffle {
     mapping(uint256 => Player) public _players;
     mapping(address => bool) public _isPlayer;
     uint8 public _totalPlayers;
+
+    Player public winner;
 
     // Bets
     mapping(address => uint256) public _bets;
@@ -28,6 +32,7 @@ contract Game is IGame, Shuffle {
 
     // Cards
     mapping(uint256 => uint8[5]) _playerCards;
+    uint8[5] public _communityCards;
     uint8 public _nextCard;
 
     /// =================================================================
@@ -114,6 +119,10 @@ contract Game is IGame, Shuffle {
         _isPlayerTurn(msg.sender);
         _isValidBet(_amount);
 
+        if (_currentRound == GameRound.End) {
+            revert GameEnded();
+        }
+
         if (_nextBet == _totalPlayers - 1) {
             _nextBet = 0;
             _nextRound();
@@ -133,6 +142,66 @@ contract Game is IGame, Shuffle {
             revert AlreadyFolded();
         }
         _isFolded[msg.sender] = true;
+    }
+
+    function chooseCards(uint8[3] memory cards) public onlyPlayer(msg.sender) {
+        if (_currentRound != GameRound.End) {
+            revert GameNotEnded();
+        }
+
+        // check if three cards are in community cards.
+        for (uint8 i = 0; i < 3; i++) {
+            bool found = false;
+            for (uint8 j = 0; j < 5; j++) {
+                if (_communityCards[j] == cards[i]) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                revert NotACommunityCard();
+            }
+        }
+
+        // check if all are unique
+        for (uint8 i = 0; i < 3; i++) {
+            for (uint8 j = i + 1; j < 3; j++) {
+                if (cards[i] == cards[j]) {
+                    revert DuplicateCommunityCard();
+                }
+            }
+        }
+
+        uint256 playerIndex = getPlayerIndex(msg.sender);
+
+        _playerCards[playerIndex][2] = cards[0];
+        _playerCards[playerIndex][3] = cards[1];
+        _playerCards[playerIndex][4] = cards[2];
+    }
+
+    function declareWinner() public {
+        if (winner.addr != address(0)) {
+            revert WinnerAlreadyDeclared();
+        }
+        uint8[5][] memory revealedCards = new uint8[5][](_totalPlayers);
+        PokerCard[5][] memory cards = new PokerCard[5][](_totalPlayers);
+        uint256[] memory weights = new uint256[](_totalPlayers);
+
+        for (uint8 i = 0; i < _totalPlayers; i++) {
+            revealedCards[i] = revealMultipleCards(_playerCards[i]);
+            cards[i] = TexasPoker.toPokerCards(revealedCards[i]);
+            weights[i] = TexasPoker.getWeight(cards[i]);
+        }
+
+        // Get index of largest weight
+        uint256 maxIndex = 0;
+        for (uint8 i = 1; i < _totalPlayers; i++) {
+            if (weights[i] > weights[maxIndex]) {
+                maxIndex = i;
+            }
+        }
+
+        winner = _players[maxIndex];
     }
 
     /// =================================================================
@@ -171,6 +240,10 @@ contract Game is IGame, Shuffle {
         return _playerCards[index];
     }
 
+    function getCommunityCards() public view returns (uint8[5] memory) {
+        return _communityCards;
+    }
+
     /// =================================================================
     ///                         Internal Functions
     /// =================================================================
@@ -181,16 +254,25 @@ contract Game is IGame, Shuffle {
             _currentRound = GameRound.PreFlop;
         } else if (_currentRound == GameRound.PreFlop) {
             _currentRound = GameRound.Flop;
-            // TODO: Reveal Three Community Cards
+            _addCommunityCards(0, 3);
         } else if (_currentRound == GameRound.Flop) {
-            // TODO: Reveal Next Card
+            _addCommunityCards(3, 4);
             _currentRound = GameRound.Turn;
         } else if (_currentRound == GameRound.Turn) {
-            // TODO: Reveal Last Card
+            _addCommunityCards(4, 5);
             _currentRound = GameRound.River;
         } else {
-            // TODO: Calculate Results
+            _currentRound = GameRound.End;
         }
+    }
+
+    function getPlayerIndex(address player) internal view returns (uint256) {
+        for (uint256 i = 0; i < _totalPlayers; i++) {
+            if (_players[i].addr == player) {
+                return i;
+            }
+        }
+        revert NotAPlayer();
     }
 
     function _distributeCards() internal {
@@ -214,5 +296,14 @@ contract Game is IGame, Shuffle {
         if (amount < _highestBet) {
             revert InvalidBetAmount();
         }
+    }
+
+    function _addCommunityCards(uint8 start, uint8 end) internal {
+        uint8 nextCard = _nextCard;
+        for (uint8 i = start; i < end; i++) {
+            _communityCards[i] = nextCard;
+            nextCard++;
+        }
+        _nextCard = nextCard;
     }
 }

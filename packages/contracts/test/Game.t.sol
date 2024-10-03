@@ -8,7 +8,11 @@ import {IGame, Player, GameRound} from "src/interfaces/IGame.sol";
 
 import {Point} from "src/secret-engine/Verifiers.sol";
 
+import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
+
 contract GameTest is Test {
+    using Strings for uint8;
+
     Game public game;
 
     Vm.Wallet public alice;
@@ -56,21 +60,41 @@ contract GameTest is Test {
 
     function getCards(address user) internal view {
         uint8[5] memory cards = game.getPlayerCards(user);
-        string memory log = "";
-        string memory payload = "log(string,uint8,uint8,uint8,uint8,uint8)";
-        if (user == alice.addr) {
-            console._sendLogPayload(
-                abi.encodeWithSignature(
-                    payload, "Alice Cards: %d %d %d %d %d", cards[0], cards[1], cards[2], cards[3], cards[4]
-                )
-            );
-        } else {
-            console._sendLogPayload(
-                abi.encodeWithSignature(
-                    payload, "Bob Cards: %d %d %d %d %d", cards[0], cards[1], cards[2], cards[3], cards[4]
-                )
-            );
-        }
+        string memory log = string(
+            abi.encodePacked(
+                user == alice.addr ? "Alice" : "Bob",
+                " Cards: ",
+                cards[0].toString(),
+                " ",
+                cards[1].toString(),
+                " ",
+                cards[2].toString(),
+                " ",
+                cards[3].toString(),
+                " ",
+                cards[4].toString()
+            )
+        );
+        console.log(log);
+    }
+
+    function getCommunityCards() internal view {
+        uint8[5] memory cards = game.getCommunityCards();
+        string memory log = string(
+            abi.encodePacked(
+                "Community Cards: ",
+                cards[0].toString(),
+                " ",
+                cards[1].toString(),
+                " ",
+                cards[2].toString(),
+                " ",
+                cards[3].toString(),
+                " ",
+                cards[4].toString()
+            )
+        );
+        console.log(log);
     }
 
     function printStats() internal view {
@@ -84,6 +108,7 @@ contract GameTest is Test {
         console.log("Pot Amount: ", game.getPotAmount());
         getCards(alice.addr);
         getCards(bob.addr);
+        getCommunityCards();
 
         console.log("");
         console.log("");
@@ -100,15 +125,11 @@ contract GameTest is Test {
         console.log("Bob joined the game");
         vm.stopBroadcast();
 
-        printStats();
-
         // Alice Places Bet
         vm.startBroadcast(alice.addr);
         game.placeBet(10);
         console.log("Alice placed bet of 10");
         vm.stopBroadcast();
-
-        printStats();
 
         // Bob Places Bet
         vm.startBroadcast(bob.addr);
@@ -116,8 +137,6 @@ contract GameTest is Test {
         game.placeBet(9);
         console.log("Bob cannot place bet less than highest bid");
         vm.stopBroadcast();
-
-        printStats();
 
         // Bob Places Bet
         vm.startBroadcast(bob.addr);
@@ -140,12 +159,71 @@ contract GameTest is Test {
         console.log("Alice placed bet of 15");
         vm.stopBroadcast();
 
-        printStats();
-
         // Bob Places Bet
         vm.startBroadcast(bob.addr);
         game.placeBet(25);
         console.log("Bob placed bet of 25");
+        vm.stopBroadcast();
+
+        printStats();
+
+        // Alice Places Bet
+        vm.startBroadcast(alice.addr);
+        game.placeBet(30);
+        console.log("Alice placed bet of 30");
+        vm.stopBroadcast();
+
+        // Bob Places Bet
+        vm.startBroadcast(bob.addr);
+        game.placeBet(35);
+        console.log("Bob placed bet of 35");
+        vm.stopBroadcast();
+
+        printStats();
+
+        // Alice Places Bet
+        vm.startBroadcast(alice.addr);
+        game.placeBet(40);
+        console.log("Alice placed bet of 40");
+        vm.stopBroadcast();
+
+        // Bob Places Bet
+        vm.startBroadcast(bob.addr);
+        game.placeBet(45);
+        console.log("Bob placed bet of 45");
+        vm.stopBroadcast();
+
+        printStats();
+
+        // Alice Places Bet
+        vm.startBroadcast(alice.addr);
+        game.placeBet(50);
+        console.log("Alice placed bet of 50");
+        vm.stopBroadcast();
+
+        // Bob Places Bet
+        vm.startBroadcast(bob.addr);
+        game.placeBet(55);
+        console.log("Bob placed bet of 55");
+        vm.stopBroadcast();
+
+        printStats();
+
+        // Alice Places Bet
+        vm.startBroadcast(alice.addr);
+        vm.expectRevert(IGame.GameEnded.selector);
+        game.placeBet(60);
+        console.log("Alice cannot place bet as game has ended.");
+        vm.stopBroadcast();
+
+        vm.startBroadcast(alice.addr);
+        game.chooseCards([6, 7, 9]);
+        console.log("Alice chose cards 6 7 9.");
+        vm.stopBroadcast();
+
+        vm.startBroadcast(bob.addr);
+        game.chooseCards([5, 7, 8]);
+        console.log("Bob chose cards 5 7 8.");
         vm.stopBroadcast();
 
         printStats();

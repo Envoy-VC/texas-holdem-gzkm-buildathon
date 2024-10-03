@@ -13,7 +13,8 @@ enum GameRound {
     PreFlop,
     Flop,
     Turn,
-    River
+    River,
+    End
 }
 
 interface IGame {
@@ -29,4 +30,12 @@ interface IGame {
     error LastRound();
 
     error AlreadyFolded();
+
+    error GameEnded();
+    error GameNotEnded();
+
+    error NotACommunityCard();
+    error DuplicateCommunityCard();
+
+    error WinnerAlreadyDeclared();
 }

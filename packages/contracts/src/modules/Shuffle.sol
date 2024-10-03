@@ -148,4 +148,14 @@ contract Shuffle is IShuffle {
         );
         return cardId;
     }
+
+    function revealMultipleCards(uint8[5] memory indexes) public view returns (uint8[5] memory) {
+        uint8[5] memory results;
+
+        for (uint8 i = 0; i < 5; i++) {
+            results[i] = revealCard(indexes[i]);
+        }
+
+        return results;
+    }
 }
