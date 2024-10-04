@@ -1,0 +1,163 @@
+[
+  {
+    "type": "constructor",
+    "inputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "_games",
+    "inputs": [
+      {
+        "name": "",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "createGame",
+    "inputs": [
+      {
+        "name": "salt",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      },
+      {
+        "name": "_revealVerifier",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "_shuffleVerifier",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "_initialPlayer",
+        "type": "tuple",
+        "internalType": "struct Player",
+        "components": [
+          {
+            "name": "addr",
+            "type": "address",
+            "internalType": "address"
+          },
+          {
+            "name": "publicKey",
+            "type": "tuple",
+            "internalType": "struct Point",
+            "components": [
+              {
+                "name": "x",
+                "type": "uint256",
+                "internalType": "uint256"
+              },
+              {
+                "name": "y",
+                "type": "uint256",
+                "internalType": "uint256"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "getGameByteCode",
+    "inputs": [
+      {
+        "name": "_revealVerifier",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "_shuffleVerifier",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "_initialPlayer",
+        "type": "tuple",
+        "internalType": "struct Player",
+        "components": [
+          {
+            "name": "addr",
+            "type": "address",
+            "internalType": "address"
+          },
+          {
+            "name": "publicKey",
+            "type": "tuple",
+            "internalType": "struct Point",
+            "components": [
+              {
+                "name": "x",
+                "type": "uint256",
+                "internalType": "uint256"
+              },
+              {
+                "name": "y",
+                "type": "uint256",
+                "internalType": "uint256"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "bytes",
+        "internalType": "bytes"
+      }
+    ],
+    "stateMutability": "pure"
+  },
+  {
+    "type": "error",
+    "name": "Create2EmptyBytecode",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "Create2FailedDeployment",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "Create2InsufficientBalance",
+    "inputs": [
+      {
+        "name": "balance",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "needed",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ]
+  }
+]
