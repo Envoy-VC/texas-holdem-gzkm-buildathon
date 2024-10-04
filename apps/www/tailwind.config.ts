@@ -20,6 +20,7 @@ const config = {
     extend: {
       fontFamily: {
         sans: ['var(--font-geist-sans)'],
+        poker: ['var(--font-poker)'],
       },
       colors: {
         border: 'var(--border)',

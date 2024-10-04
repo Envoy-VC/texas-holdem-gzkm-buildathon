@@ -1,3 +1,4 @@
+import { mainnet } from 'viem/chains';
 import {
   type Config,
   cookieStorage,
@@ -5,9 +6,10 @@ import {
   createStorage,
   http,
 } from 'wagmi';
-import { anvil, mainnet, sepolia } from 'wagmi/chains';
 import { walletConnect } from 'wagmi/connectors';
 import { env } from '~/env';
+
+import { opBNBTestnetFork } from './chains';
 
 export const projectId = env.NEXT_PUBLIC_WALLETCONNECT_ID;
 
@@ -19,7 +21,7 @@ const metadata = {
 };
 
 export const wagmiConfig: Config = createConfig({
-  chains: [mainnet, sepolia, anvil],
+  chains: [opBNBTestnetFork, mainnet],
   ssr: true,
   storage: createStorage({
     storage: cookieStorage,
@@ -27,7 +29,6 @@ export const wagmiConfig: Config = createConfig({
   connectors: [walletConnect({ projectId, metadata, showQrModal: false })],
   transports: {
     [mainnet.id]: http(),
-    [sepolia.id]: http(),
-    [anvil.id]: http(),
+    [opBNBTestnetFork.id]: http(),
   },
 });

@@ -1,3 +1,4 @@
+import localFont from 'next/font/local';
 import { headers } from 'next/headers';
 
 import { wagmiConfig } from '~/lib/viem';
@@ -5,10 +6,18 @@ import { wagmiConfig } from '~/lib/viem';
 import { GeistSans } from 'geist/font/sans';
 import type { Metadata } from 'next';
 import { cookieToInitialState } from 'wagmi';
+import { Navbar } from '~/components';
 import { Web3Provider } from '~/providers';
 import '~/styles/globals.css';
 
 import { Toaster } from '~/components/ui/sonner';
+
+import { ThemeProvider } from '../providers/theme-provider';
+
+const pokerFont = localFont({
+  src: '../../public/fonts/poker.otf',
+  variable: '--font-poker',
+});
 
 export const metadata: Metadata = {
   title: 'Create T3 App',
@@ -24,9 +33,14 @@ const RootLayout = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <html lang='en'>
-      <body className={`font-sans ${GeistSans.variable}`}>
-        <Web3Provider initialState={initialState}>{children}</Web3Provider>
-        <Toaster />
+      <body className={`font-sans ${GeistSans.variable} ${pokerFont.variable}`}>
+        <ThemeProvider>
+          <Web3Provider initialState={initialState}>
+            <Navbar />
+            {children}
+            <Toaster />
+          </Web3Provider>
+        </ThemeProvider>
       </body>
     </html>
   );

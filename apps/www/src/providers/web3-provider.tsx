@@ -13,7 +13,7 @@ createWeb3Modal({
   projectId,
   enableAnalytics: true,
   enableOnramp: true,
-  themeMode: 'light',
+  themeMode: 'dark',
 });
 
 const queryClient = new QueryClient();
