@@ -33,7 +33,9 @@ const RootLayout = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <html lang='en'>
-      <body className={`font-sans ${GeistSans.variable} ${pokerFont.variable}`}>
+      <body
+        className={`font-sans ${GeistSans.variable} ${pokerFont.variable}`}
+      >
         <ThemeProvider>
           <Web3Provider initialState={initialState}>
             <Navbar />
