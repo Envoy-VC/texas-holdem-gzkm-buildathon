@@ -1,5 +1,3 @@
-import GAME_ABI from 'public/abi/Game.json';
-import GAME_FACTORY_ABI from 'public/abi/GameFactory.json';
 import AddressConfig from 'public/config.json';
 import type { Abi } from 'viem';
 import { mainnet } from 'viem/chains';
@@ -13,6 +11,7 @@ import {
 import { walletConnect } from 'wagmi/connectors';
 import { env } from '~/env';
 
+import { GAME_ABI, GAME_FACTORY_ABI } from './abi';
 import { opBNBTestnetFork } from './chains';
 
 export const projectId = env.NEXT_PUBLIC_WALLETCONNECT_ID;
@@ -38,7 +37,7 @@ export const wagmiConfig: Config = createConfig({
 });
 
 export const gameFactoryConfig = {
-  abi: GAME_FACTORY_ABI as Abi,
+  abi: GAME_FACTORY_ABI,
   address: AddressConfig.GAME_FACTORY_ADDRESS as `0x${string}`,
 } as const;
 

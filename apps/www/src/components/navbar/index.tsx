@@ -1,5 +1,6 @@
 import React from 'react';
 
+import { CreateGame } from '../create-game';
 import { ConnectButton } from './connect-button';
 
 export const Navbar = () => {
@@ -9,7 +10,10 @@ export const Navbar = () => {
         <div className='font-poker text-4xl font-semibold'>
           Texas Hold&lsquo;em
         </div>
-        <ConnectButton />
+        <div className='flex flex-row items-center gap-3'>
+          <CreateGame />
+          <ConnectButton />
+        </div>
       </div>
     </div>
   );
