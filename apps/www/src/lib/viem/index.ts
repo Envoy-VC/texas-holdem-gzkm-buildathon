@@ -1,6 +1,6 @@
 import AddressConfig from 'public/config.json';
 import type { Abi } from 'viem';
-import { mainnet } from 'viem/chains';
+import { opBNBTestnet } from 'viem/chains';
 import {
   type Config,
   cookieStorage,
@@ -12,7 +12,6 @@ import { walletConnect } from 'wagmi/connectors';
 import { env } from '~/env';
 
 import { GAME_ABI, GAME_FACTORY_ABI } from './abi';
-import { opBNBTestnetFork } from './chains';
 
 export const projectId = env.NEXT_PUBLIC_WALLETCONNECT_ID;
 
@@ -24,15 +23,14 @@ const metadata = {
 };
 
 export const wagmiConfig: Config = createConfig({
-  chains: [opBNBTestnetFork, mainnet],
+  chains: [opBNBTestnet],
   ssr: true,
   storage: createStorage({
     storage: cookieStorage,
   }),
   connectors: [walletConnect({ projectId, metadata, showQrModal: false })],
   transports: {
-    [mainnet.id]: http(),
-    [opBNBTestnetFork.id]: http(),
+    [opBNBTestnet.id]: http(),
   },
 });
 

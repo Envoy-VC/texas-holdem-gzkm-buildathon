@@ -11,7 +11,7 @@ library QuickSort {
     }
 
     /**
-     * Quicksort is a sorting algorithm based on the divide and conquer approach *
+     * Quicksort is a sorting algorithm based on the divide and conquer approach
      */
     function quickSort(uint8[] memory _arr, int256 left, int256 right) internal {
         int256 i = left;
