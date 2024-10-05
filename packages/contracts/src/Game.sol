@@ -119,6 +119,7 @@ contract Game is IGame, Shuffle {
         _isPlayerTurn(msg.sender);
         _isValidBet(_amount);
         _isShuffled();
+        _isPlayerNotFolded(msg.sender);
 
         if (_currentRound == GameRound.End) {
             revert GameEnded();
@@ -204,6 +205,12 @@ contract Game is IGame, Shuffle {
         }
 
         winner = _players[maxIndex];
+
+        // Move pot to winner
+        for (uint8 i = 0; i < _totalPlayers; i++) {
+            _bets[_players[i].addr] = 0;
+        }
+        _bets[winner.addr] = getPotAmount();
     }
 
     /// =================================================================
@@ -291,6 +298,12 @@ contract Game is IGame, Shuffle {
     function _isPlayerTurn(address player) internal view {
         if (_players[_nextBet].addr != player) {
             revert InvalidBetSequence();
+        }
+    }
+
+    function _isPlayerNotFolded(address player) internal view {
+        if (_isFolded[player] == true) {
+            revert PlayerFolded();
         }
     }
 

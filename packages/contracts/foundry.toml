@@ -15,7 +15,8 @@ fs_permissions = [
 ffi = true
 
 
-# See more config options https://github.com/foundry-rs/foundry/blob/master/crates/config/README.md#all-options
-
 [rpc_endpoints]
-opBNBFork = "http://127.0.0.1:8545"
+opBNBTestnet = "${OP_BNB_TESTNET_RPC}"
+
+[etherscan]
+5611 = { key = "${OP_BNB_ETHERSCAN_API_KEY}", url = "https://api-opbnb-testnet.bscscan.com/api" }

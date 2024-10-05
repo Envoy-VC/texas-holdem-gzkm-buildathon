@@ -29,6 +29,7 @@ interface IGame {
 
     error LastRound();
 
+    error PlayerFolded();
     error AlreadyFolded();
 
     error GameEnded();

@@ -10,10 +10,10 @@ import {AbiExport} from "script/helpers/AbiExport.sol";
 
 contract DeployScript is Script {
     GameFactory public factory;
-    AbiExport public abiExport;
+    // AbiExport public abiExport;
 
     function setUp() public {
-        abiExport = new AbiExport();
+        // abiExport = new AbiExport();
     }
 
     function run() public {
@@ -31,16 +31,16 @@ contract DeployScript is Script {
         vm.stopBroadcast();
     }
 
-    function exportAbi() internal {
-        string memory outDir = "../../apps/www/public/abi/";
-        string memory basePath = "src/";
-        AbiExport.Contract memory contract1 = AbiExport.Contract({path: "Game.sol", name: "Game"});
-        AbiExport.Contract memory contract2 = AbiExport.Contract({path: "GameFactory.sol", name: "GameFactory"});
+    // function exportAbi() internal {
+    //     string memory outDir = "../../apps/www/public/abi/";
+    //     string memory basePath = "src/";
+    //     AbiExport.Contract memory contract1 = AbiExport.Contract({path: "Game.sol", name: "Game"});
+    //     AbiExport.Contract memory contract2 = AbiExport.Contract({path: "GameFactory.sol", name: "GameFactory"});
 
-        AbiExport.Contract[] memory contracts = new AbiExport.Contract[](2);
-        contracts[0] = contract1;
-        contracts[1] = contract2;
+    //     AbiExport.Contract[] memory contracts = new AbiExport.Contract[](2);
+    //     contracts[0] = contract1;
+    //     contracts[1] = contract2;
 
-        abiExport.export(contracts, outDir, basePath);
-    }
+    //     abiExport.export(contracts, outDir, basePath);
+    // }
 }
