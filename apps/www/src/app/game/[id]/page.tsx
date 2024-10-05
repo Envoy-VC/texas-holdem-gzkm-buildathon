@@ -1,11 +1,15 @@
 import React from 'react';
 
-import { Overlay } from '../../../components/overlay';
+import { isAddress, zeroAddress } from 'viem';
 
-const GamePage = () => {
+import { ShuffleOverlay } from '~/components/overlays';
+
+const GamePage = ({ params }: { params: { id: `0x${string}` } }) => {
+  const contractAddress = isAddress(params.id) ? params.id : zeroAddress;
+
   return (
     <div>
-      <Overlay>assda</Overlay>
+      <ShuffleOverlay contractAddress={contractAddress} />
     </div>
   );
 };

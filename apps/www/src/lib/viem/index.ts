@@ -40,5 +40,5 @@ export const gameFactoryConfig = {
 } as const;
 
 export const gameConfig = {
-  abi: GAME_ABI as Abi,
+  abi: GAME_ABI,
 } as const;

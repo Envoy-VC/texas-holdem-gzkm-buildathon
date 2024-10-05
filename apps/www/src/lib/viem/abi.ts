@@ -85,41 +85,21 @@ export const GAME_ABI = [
   {
     type: 'constructor',
     inputs: [
-      {
-        name: '_revealVerifier',
-        type: 'address',
-        internalType: 'address',
-      },
-      {
-        name: '_shuffleVerifier',
-        type: 'address',
-        internalType: 'address',
-      },
+      { name: '_revealVerifier', type: 'address', internalType: 'address' },
+      { name: '_shuffleVerifier', type: 'address', internalType: 'address' },
       {
         name: '_initialPlayer',
         type: 'tuple',
         internalType: 'struct Player',
         components: [
-          {
-            name: 'addr',
-            type: 'address',
-            internalType: 'address',
-          },
+          { name: 'addr', type: 'address', internalType: 'address' },
           {
             name: 'publicKey',
             type: 'tuple',
             internalType: 'struct Point',
             components: [
-              {
-                name: 'x',
-                type: 'uint256',
-                internalType: 'uint256',
-              },
-              {
-                name: 'y',
-                type: 'uint256',
-                internalType: 'uint256',
-              },
+              { name: 'x', type: 'uint256', internalType: 'uint256' },
+              { name: 'y', type: 'uint256', internalType: 'uint256' },
             ],
           },
         ],
@@ -130,162 +110,89 @@ export const GAME_ABI = [
   {
     type: 'function',
     name: '_bets',
-    inputs: [
-      {
-        name: '',
-        type: 'address',
-        internalType: 'address',
-      },
-    ],
-    outputs: [
-      {
-        name: '',
-        type: 'uint256',
-        internalType: 'uint256',
-      },
-    ],
+    inputs: [{ name: '', type: 'address', internalType: 'address' }],
+    outputs: [{ name: '', type: 'uint256', internalType: 'uint256' }],
     stateMutability: 'view',
   },
   {
     type: 'function',
     name: '_communityCards',
-    inputs: [
-      {
-        name: '',
-        type: 'uint256',
-        internalType: 'uint256',
-      },
-    ],
-    outputs: [
-      {
-        name: '',
-        type: 'uint8',
-        internalType: 'uint8',
-      },
-    ],
+    inputs: [{ name: '', type: 'uint256', internalType: 'uint256' }],
+    outputs: [{ name: '', type: 'uint8', internalType: 'uint8' }],
     stateMutability: 'view',
   },
   {
     type: 'function',
     name: '_currentRound',
     inputs: [],
-    outputs: [
-      {
-        name: '',
-        type: 'uint8',
-        internalType: 'enum GameRound',
-      },
-    ],
+    outputs: [{ name: '', type: 'uint8', internalType: 'enum GameRound' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: '_gameStarted',
+    inputs: [],
+    outputs: [{ name: '', type: 'bool', internalType: 'bool' }],
     stateMutability: 'view',
   },
   {
     type: 'function',
     name: '_highestBet',
     inputs: [],
-    outputs: [
-      {
-        name: '',
-        type: 'uint256',
-        internalType: 'uint256',
-      },
-    ],
+    outputs: [{ name: '', type: 'uint256', internalType: 'uint256' }],
     stateMutability: 'view',
   },
   {
     type: 'function',
     name: '_isFolded',
-    inputs: [
-      {
-        name: '',
-        type: 'address',
-        internalType: 'address',
-      },
-    ],
-    outputs: [
-      {
-        name: '',
-        type: 'bool',
-        internalType: 'bool',
-      },
-    ],
+    inputs: [{ name: '', type: 'address', internalType: 'address' }],
+    outputs: [{ name: '', type: 'bool', internalType: 'bool' }],
     stateMutability: 'view',
   },
   {
     type: 'function',
     name: '_isPlayer',
-    inputs: [
-      {
-        name: '',
-        type: 'address',
-        internalType: 'address',
-      },
-    ],
-    outputs: [
-      {
-        name: '',
-        type: 'bool',
-        internalType: 'bool',
-      },
-    ],
+    inputs: [{ name: '', type: 'address', internalType: 'address' }],
+    outputs: [{ name: '', type: 'bool', internalType: 'bool' }],
     stateMutability: 'view',
   },
   {
     type: 'function',
     name: '_nextBet',
     inputs: [],
-    outputs: [
-      {
-        name: '',
-        type: 'uint8',
-        internalType: 'uint8',
-      },
-    ],
+    outputs: [{ name: '', type: 'uint8', internalType: 'uint8' }],
     stateMutability: 'view',
   },
   {
     type: 'function',
     name: '_nextCard',
     inputs: [],
-    outputs: [
-      {
-        name: '',
-        type: 'uint8',
-        internalType: 'uint8',
-      },
+    outputs: [{ name: '', type: 'uint8', internalType: 'uint8' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: '_playerCards',
+    inputs: [
+      { name: '', type: 'uint256', internalType: 'uint256' },
+      { name: '', type: 'uint256', internalType: 'uint256' },
     ],
+    outputs: [{ name: '', type: 'uint8', internalType: 'uint8' }],
     stateMutability: 'view',
   },
   {
     type: 'function',
     name: '_players',
-    inputs: [
-      {
-        name: '',
-        type: 'uint256',
-        internalType: 'uint256',
-      },
-    ],
+    inputs: [{ name: '', type: 'uint256', internalType: 'uint256' }],
     outputs: [
-      {
-        name: 'addr',
-        type: 'address',
-        internalType: 'address',
-      },
+      { name: 'addr', type: 'address', internalType: 'address' },
       {
         name: 'publicKey',
         type: 'tuple',
         internalType: 'struct Point',
         components: [
-          {
-            name: 'x',
-            type: 'uint256',
-            internalType: 'uint256',
-          },
-          {
-            name: 'y',
-            type: 'uint256',
-            internalType: 'uint256',
-          },
+          { name: 'x', type: 'uint256', internalType: 'uint256' },
+          { name: 'y', type: 'uint256', internalType: 'uint256' },
         ],
       },
     ],
@@ -295,38 +202,18 @@ export const GAME_ABI = [
     type: 'function',
     name: '_revealTokens',
     inputs: [
-      {
-        name: '',
-        type: 'uint256',
-        internalType: 'uint256',
-      },
-      {
-        name: '',
-        type: 'uint256',
-        internalType: 'uint256',
-      },
+      { name: '', type: 'uint256', internalType: 'uint256' },
+      { name: '', type: 'uint256', internalType: 'uint256' },
     ],
     outputs: [
-      {
-        name: 'player',
-        type: 'address',
-        internalType: 'address',
-      },
+      { name: 'player', type: 'address', internalType: 'address' },
       {
         name: 'token',
         type: 'tuple',
         internalType: 'struct Point',
         components: [
-          {
-            name: 'x',
-            type: 'uint256',
-            internalType: 'uint256',
-          },
-          {
-            name: 'y',
-            type: 'uint256',
-            internalType: 'uint256',
-          },
+          { name: 'x', type: 'uint256', internalType: 'uint256' },
+          { name: 'y', type: 'uint256', internalType: 'uint256' },
         ],
       },
     ],
@@ -334,51 +221,43 @@ export const GAME_ABI = [
   },
   {
     type: 'function',
+    name: '_shuffled',
+    inputs: [{ name: '', type: 'address', internalType: 'address' }],
+    outputs: [{ name: '', type: 'bool', internalType: 'bool' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
     name: '_totalPlayers',
     inputs: [],
-    outputs: [
-      {
-        name: '',
-        type: 'uint8',
-        internalType: 'uint8',
-      },
-    ],
+    outputs: [{ name: '', type: 'uint8', internalType: 'uint8' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: '_totalShuffles',
+    inputs: [],
+    outputs: [{ name: '', type: 'uint256', internalType: 'uint256' }],
     stateMutability: 'view',
   },
   {
     type: 'function',
     name: 'addMultipleRevealTokens',
     inputs: [
-      {
-        name: 'indexes',
-        type: 'uint8[]',
-        internalType: 'uint8[]',
-      },
+      { name: 'indexes', type: 'uint8[]', internalType: 'uint8[]' },
       {
         name: 'revealTokens',
         type: 'tuple[]',
         internalType: 'struct Shuffle.RevealToken[]',
         components: [
-          {
-            name: 'player',
-            type: 'address',
-            internalType: 'address',
-          },
+          { name: 'player', type: 'address', internalType: 'address' },
           {
             name: 'token',
             type: 'tuple',
             internalType: 'struct Point',
             components: [
-              {
-                name: 'x',
-                type: 'uint256',
-                internalType: 'uint256',
-              },
-              {
-                name: 'y',
-                type: 'uint256',
-                internalType: 'uint256',
-              },
+              { name: 'x', type: 'uint256', internalType: 'uint256' },
+              { name: 'y', type: 'uint256', internalType: 'uint256' },
             ],
           },
         ],
@@ -391,45 +270,25 @@ export const GAME_ABI = [
     type: 'function',
     name: 'addRevealToken',
     inputs: [
-      {
-        name: 'index',
-        type: 'uint8',
-        internalType: 'uint8',
-      },
+      { name: 'index', type: 'uint8', internalType: 'uint8' },
       {
         name: 'revealToken',
         type: 'tuple',
         internalType: 'struct Shuffle.RevealToken',
         components: [
-          {
-            name: 'player',
-            type: 'address',
-            internalType: 'address',
-          },
+          { name: 'player', type: 'address', internalType: 'address' },
           {
             name: 'token',
             type: 'tuple',
             internalType: 'struct Point',
             components: [
-              {
-                name: 'x',
-                type: 'uint256',
-                internalType: 'uint256',
-              },
-              {
-                name: 'y',
-                type: 'uint256',
-                internalType: 'uint256',
-              },
+              { name: 'x', type: 'uint256', internalType: 'uint256' },
+              { name: 'y', type: 'uint256', internalType: 'uint256' },
             ],
           },
         ],
       },
-      {
-        name: 'proof',
-        type: 'uint256[8]',
-        internalType: 'uint256[8]',
-      },
+      { name: 'proof', type: 'uint256[8]', internalType: 'uint256[8]' },
     ],
     outputs: [],
     stateMutability: 'nonpayable',
@@ -437,13 +296,7 @@ export const GAME_ABI = [
   {
     type: 'function',
     name: 'chooseCards',
-    inputs: [
-      {
-        name: 'cards',
-        type: 'uint8[3]',
-        internalType: 'uint8[3]',
-      },
-    ],
+    inputs: [{ name: 'cards', type: 'uint8[3]', internalType: 'uint8[3]' }],
     outputs: [],
     stateMutability: 'nonpayable',
   },
@@ -451,24 +304,10 @@ export const GAME_ABI = [
     type: 'function',
     name: 'deck',
     inputs: [
-      {
-        name: '',
-        type: 'uint256',
-        internalType: 'uint256',
-      },
-      {
-        name: '',
-        type: 'uint256',
-        internalType: 'uint256',
-      },
+      { name: '', type: 'uint256', internalType: 'uint256' },
+      { name: '', type: 'uint256', internalType: 'uint256' },
     ],
-    outputs: [
-      {
-        name: '',
-        type: 'uint256',
-        internalType: 'uint256',
-      },
-    ],
+    outputs: [{ name: '', type: 'uint256', internalType: 'uint256' }],
     stateMutability: 'view',
   },
   {
@@ -490,16 +329,8 @@ export const GAME_ABI = [
     name: 'gameKey',
     inputs: [],
     outputs: [
-      {
-        name: 'x',
-        type: 'uint256',
-        internalType: 'uint256',
-      },
-      {
-        name: 'y',
-        type: 'uint256',
-        internalType: 'uint256',
-      },
+      { name: 'x', type: 'uint256', internalType: 'uint256' },
+      { name: 'y', type: 'uint256', internalType: 'uint256' },
     ],
     stateMutability: 'view',
   },
@@ -507,51 +338,27 @@ export const GAME_ABI = [
     type: 'function',
     name: 'getCommunityCards',
     inputs: [],
-    outputs: [
-      {
-        name: '',
-        type: 'uint8[5]',
-        internalType: 'uint8[5]',
-      },
-    ],
+    outputs: [{ name: '', type: 'uint8[5]', internalType: 'uint8[5]' }],
     stateMutability: 'view',
   },
   {
     type: 'function',
     name: 'getPlayer',
-    inputs: [
-      {
-        name: 'addr',
-        type: 'address',
-        internalType: 'address',
-      },
-    ],
+    inputs: [{ name: 'addr', type: 'address', internalType: 'address' }],
     outputs: [
       {
         name: '',
         type: 'tuple',
         internalType: 'struct Player',
         components: [
-          {
-            name: 'addr',
-            type: 'address',
-            internalType: 'address',
-          },
+          { name: 'addr', type: 'address', internalType: 'address' },
           {
             name: 'publicKey',
             type: 'tuple',
             internalType: 'struct Point',
             components: [
-              {
-                name: 'x',
-                type: 'uint256',
-                internalType: 'uint256',
-              },
-              {
-                name: 'y',
-                type: 'uint256',
-                internalType: 'uint256',
-              },
+              { name: 'x', type: 'uint256', internalType: 'uint256' },
+              { name: 'y', type: 'uint256', internalType: 'uint256' },
             ],
           },
         ],
@@ -562,61 +369,29 @@ export const GAME_ABI = [
   {
     type: 'function',
     name: 'getPlayerCards',
-    inputs: [
-      {
-        name: 'player',
-        type: 'address',
-        internalType: 'address',
-      },
-    ],
-    outputs: [
-      {
-        name: '',
-        type: 'uint8[5]',
-        internalType: 'uint8[5]',
-      },
-    ],
+    inputs: [{ name: 'player', type: 'address', internalType: 'address' }],
+    outputs: [{ name: '', type: 'uint8[5]', internalType: 'uint8[5]' }],
     stateMutability: 'view',
   },
   {
     type: 'function',
     name: 'getPotAmount',
     inputs: [],
-    outputs: [
-      {
-        name: '',
-        type: 'uint256',
-        internalType: 'uint256',
-      },
-    ],
+    outputs: [{ name: '', type: 'uint256', internalType: 'uint256' }],
     stateMutability: 'view',
   },
   {
     type: 'function',
     name: 'getRevealTokens',
-    inputs: [
-      {
-        name: 'index',
-        type: 'uint8',
-        internalType: 'uint8',
-      },
-    ],
+    inputs: [{ name: 'index', type: 'uint8', internalType: 'uint8' }],
     outputs: [
       {
         name: '',
         type: 'tuple[]',
         internalType: 'struct Point[]',
         components: [
-          {
-            name: 'x',
-            type: 'uint256',
-            internalType: 'uint256',
-          },
-          {
-            name: 'y',
-            type: 'uint256',
-            internalType: 'uint256',
-          },
+          { name: 'x', type: 'uint256', internalType: 'uint256' },
+          { name: 'y', type: 'uint256', internalType: 'uint256' },
         ],
       },
     ],
@@ -641,11 +416,7 @@ export const GAME_ABI = [
         type: 'uint256[4][52]',
         internalType: 'uint256[4][52]',
       },
-      {
-        name: '_proof',
-        type: 'bytes',
-        internalType: 'bytes',
-      },
+      { name: '_proof', type: 'bytes', internalType: 'bytes' },
     ],
     outputs: [],
     stateMutability: 'nonpayable',
@@ -659,26 +430,14 @@ export const GAME_ABI = [
         type: 'tuple',
         internalType: 'struct Player',
         components: [
-          {
-            name: 'addr',
-            type: 'address',
-            internalType: 'address',
-          },
+          { name: 'addr', type: 'address', internalType: 'address' },
           {
             name: 'publicKey',
             type: 'tuple',
             internalType: 'struct Point',
             components: [
-              {
-                name: 'x',
-                type: 'uint256',
-                internalType: 'uint256',
-              },
-              {
-                name: 'y',
-                type: 'uint256',
-                internalType: 'uint256',
-              },
+              { name: 'x', type: 'uint256', internalType: 'uint256' },
+              { name: 'y', type: 'uint256', internalType: 'uint256' },
             ],
           },
         ],
@@ -697,26 +456,14 @@ export const GAME_ABI = [
         type: 'tuple',
         internalType: 'struct Player',
         components: [
-          {
-            name: 'addr',
-            type: 'address',
-            internalType: 'address',
-          },
+          { name: 'addr', type: 'address', internalType: 'address' },
           {
             name: 'publicKey',
             type: 'tuple',
             internalType: 'struct Point',
             components: [
-              {
-                name: 'x',
-                type: 'uint256',
-                internalType: 'uint256',
-              },
-              {
-                name: 'y',
-                type: 'uint256',
-                internalType: 'uint256',
-              },
+              { name: 'x', type: 'uint256', internalType: 'uint256' },
+              { name: 'y', type: 'uint256', internalType: 'uint256' },
             ],
           },
         ],
@@ -727,71 +474,29 @@ export const GAME_ABI = [
   {
     type: 'function',
     name: 'placeBet',
-    inputs: [
-      {
-        name: '_amount',
-        type: 'uint256',
-        internalType: 'uint256',
-      },
-    ],
+    inputs: [{ name: '_amount', type: 'uint256', internalType: 'uint256' }],
     outputs: [],
     stateMutability: 'nonpayable',
   },
   {
     type: 'function',
     name: 'publicKeyCommitment',
-    inputs: [
-      {
-        name: '',
-        type: 'uint256',
-        internalType: 'uint256',
-      },
-    ],
-    outputs: [
-      {
-        name: '',
-        type: 'uint256',
-        internalType: 'uint256',
-      },
-    ],
+    inputs: [{ name: '', type: 'uint256', internalType: 'uint256' }],
+    outputs: [{ name: '', type: 'uint256', internalType: 'uint256' }],
     stateMutability: 'view',
   },
   {
     type: 'function',
     name: 'revealCard',
-    inputs: [
-      {
-        name: 'index',
-        type: 'uint8',
-        internalType: 'uint8',
-      },
-    ],
-    outputs: [
-      {
-        name: '',
-        type: 'uint8',
-        internalType: 'uint8',
-      },
-    ],
+    inputs: [{ name: 'index', type: 'uint8', internalType: 'uint8' }],
+    outputs: [{ name: '', type: 'uint8', internalType: 'uint8' }],
     stateMutability: 'view',
   },
   {
     type: 'function',
     name: 'revealMultipleCards',
-    inputs: [
-      {
-        name: 'indexes',
-        type: 'uint8[5]',
-        internalType: 'uint8[5]',
-      },
-    ],
-    outputs: [
-      {
-        name: '',
-        type: 'uint8[5]',
-        internalType: 'uint8[5]',
-      },
-    ],
+    inputs: [{ name: 'indexes', type: 'uint8[5]', internalType: 'uint8[5]' }],
+    outputs: [{ name: '', type: 'uint8[5]', internalType: 'uint8[5]' }],
     stateMutability: 'view',
   },
   {
@@ -799,11 +504,7 @@ export const GAME_ABI = [
     name: 'revealVerifier',
     inputs: [],
     outputs: [
-      {
-        name: '',
-        type: 'address',
-        internalType: 'contract ZgRevealVerifier',
-      },
+      { name: '', type: 'address', internalType: 'contract ZgRevealVerifier' },
     ],
     stateMutability: 'view',
   },
@@ -816,11 +517,7 @@ export const GAME_ABI = [
         type: 'uint256[4][52]',
         internalType: 'uint256[4][52]',
       },
-      {
-        name: '_proof',
-        type: 'bytes',
-        internalType: 'bytes',
-      },
+      { name: '_proof', type: 'bytes', internalType: 'bytes' },
     ],
     outputs: [],
     stateMutability: 'nonpayable',
@@ -830,11 +527,7 @@ export const GAME_ABI = [
     name: 'shuffleVerifier',
     inputs: [],
     outputs: [
-      {
-        name: '',
-        type: 'address',
-        internalType: 'contract ZgShuffleVerifier',
-      },
+      { name: '', type: 'address', internalType: 'contract ZgShuffleVerifier' },
     ],
     stateMutability: 'view',
   },
@@ -850,124 +543,37 @@ export const GAME_ABI = [
     name: 'winner',
     inputs: [],
     outputs: [
-      {
-        name: 'addr',
-        type: 'address',
-        internalType: 'address',
-      },
+      { name: 'addr', type: 'address', internalType: 'address' },
       {
         name: 'publicKey',
         type: 'tuple',
         internalType: 'struct Point',
         components: [
-          {
-            name: 'x',
-            type: 'uint256',
-            internalType: 'uint256',
-          },
-          {
-            name: 'y',
-            type: 'uint256',
-            internalType: 'uint256',
-          },
+          { name: 'x', type: 'uint256', internalType: 'uint256' },
+          { name: 'y', type: 'uint256', internalType: 'uint256' },
         ],
       },
     ],
     stateMutability: 'view',
   },
-  {
-    type: 'error',
-    name: 'AlreadyAPlayer',
-    inputs: [],
-  },
-  {
-    type: 'error',
-    name: 'AlreadyFolded',
-    inputs: [],
-  },
-  {
-    type: 'error',
-    name: 'AlreadyShuffled',
-    inputs: [],
-  },
-  {
-    type: 'error',
-    name: 'DuplicateCommunityCard',
-    inputs: [],
-  },
-  {
-    type: 'error',
-    name: 'GameAlreadyStarted',
-    inputs: [],
-  },
-  {
-    type: 'error',
-    name: 'GameEnded',
-    inputs: [],
-  },
-  {
-    type: 'error',
-    name: 'GameNotEnded',
-    inputs: [],
-  },
-  {
-    type: 'error',
-    name: 'GameNotStarted',
-    inputs: [],
-  },
-  {
-    type: 'error',
-    name: 'InvalidBetAmount',
-    inputs: [],
-  },
-  {
-    type: 'error',
-    name: 'InvalidBetSequence',
-    inputs: [],
-  },
-  {
-    type: 'error',
-    name: 'LastRound',
-    inputs: [],
-  },
-  {
-    type: 'error',
-    name: 'NotACommunityCard',
-    inputs: [],
-  },
-  {
-    type: 'error',
-    name: 'NotAPlayer',
-    inputs: [],
-  },
-  {
-    type: 'error',
-    name: 'NotEnoughPlayers',
-    inputs: [],
-  },
-  {
-    type: 'error',
-    name: 'NotShuffled',
-    inputs: [],
-  },
-  {
-    type: 'error',
-    name: 'RevealTokenAlreadyExists',
-    inputs: [],
-  },
-  {
-    type: 'error',
-    name: 'RevealTokenVerificationError',
-    inputs: [],
-  },
-  {
-    type: 'error',
-    name: 'ShuffleVerificationError',
-    inputs: [],
-  },
-  {
-    type: 'error',
-    name: 'WinnerAlreadyDeclared',
-    inputs: [],
-  },
+  { type: 'error', name: 'AlreadyAPlayer', inputs: [] },
+  { type: 'error', name: 'AlreadyFolded', inputs: [] },
+  { type: 'error', name: 'AlreadyShuffled', inputs: [] },
+  { type: 'error', name: 'DuplicateCommunityCard', inputs: [] },
+  { type: 'error', name: 'GameAlreadyStarted', inputs: [] },
+  { type: 'error', name: 'GameEnded', inputs: [] },
+  { type: 'error', name: 'GameNotEnded', inputs: [] },
+  { type: 'error', name: 'GameNotStarted', inputs: [] },
+  { type: 'error', name: 'InvalidBetAmount', inputs: [] },
+  { type: 'error', name: 'InvalidBetSequence', inputs: [] },
+  { type: 'error', name: 'LastRound', inputs: [] },
+  { type: 'error', name: 'NotACommunityCard', inputs: [] },
+  { type: 'error', name: 'NotAPlayer', inputs: [] },
+  { type: 'error', name: 'NotEnoughPlayers', inputs: [] },
+  { type: 'error', name: 'NotShuffled', inputs: [] },
+  { type: 'error', name: 'PlayerFolded', inputs: [] },
+  { type: 'error', name: 'RevealTokenAlreadyExists', inputs: [] },
+  { type: 'error', name: 'RevealTokenVerificationError', inputs: [] },
+  { type: 'error', name: 'ShuffleVerificationError', inputs: [] },
+  { type: 'error', name: 'WinnerAlreadyDeclared', inputs: [] },
 ] as const;

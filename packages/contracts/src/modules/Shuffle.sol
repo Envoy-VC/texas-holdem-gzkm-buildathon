@@ -23,8 +23,8 @@ contract Shuffle is IShuffle {
 
     mapping(uint256 => RevealToken[]) public _revealTokens;
 
-    mapping(address => bool) _shuffled;
-    uint256 _totalShuffles;
+    mapping(address => bool) public _shuffled;
+    uint256 public _totalShuffles;
 
     function _initShuffle(
         uint256[] calldata _publicKeyCommitment,

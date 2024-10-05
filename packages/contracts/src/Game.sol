@@ -26,12 +26,12 @@ contract Game is IGame, Shuffle {
     uint256 public _highestBet;
 
     // Game State
-    bool _gameStarted;
+    bool public _gameStarted;
     GameRound public _currentRound;
     mapping(address => bool) public _isFolded;
 
     // Cards
-    mapping(uint256 => uint8[5]) _playerCards;
+    mapping(uint256 => uint8[5]) public _playerCards;
     uint8[5] public _communityCards;
     uint8 public _nextCard;
 
