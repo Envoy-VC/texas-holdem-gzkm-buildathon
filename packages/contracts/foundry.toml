@@ -18,7 +18,4 @@ ffi = true
 # See more config options https://github.com/foundry-rs/foundry/blob/master/crates/config/README.md#all-options
 
 [rpc_endpoints]
-sepolia = "https://endpoints.omniatech.io/v1/eth/sepolia/public"
-
-[etherscan]
-sepolia = { key = "${SEPOLIA_ETHERSCAN_API_KEY}", chain = 11155111 }
+opBNBFork = "http://127.0.0.1:8545"

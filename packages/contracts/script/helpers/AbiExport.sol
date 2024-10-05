@@ -11,13 +11,7 @@ contract AbiExport is Test {
         string name;
     }
 
-    function run() public {
-        string memory outDir = "../../apps/www/public/abi/";
-        string memory basePath = "src/";
-        Contract memory contract1 = Contract({path: "Game.sol", name: "Game"});
-        Contract memory contract2 = Contract({path: "GameFactory.sol", name: "GameFactory"});
-        Contract[2] memory contracts = [contract1, contract2];
-
+    function export(Contract[] memory contracts, string memory outDir, string memory basePath) public {
         for (uint256 i = 0; i < contracts.length; i++) {
             Contract memory c = contracts[i];
             string[] memory inputs = new string[](4);

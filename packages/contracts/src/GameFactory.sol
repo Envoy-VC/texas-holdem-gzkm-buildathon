@@ -9,7 +9,7 @@ import {Game} from "./Game.sol";
 
 contract GameFactory {
     mapping(uint256 => address) public _games;
-    uint256 _nextGameId;
+    uint256 public _nextGameId;
 
     constructor() {}
 
