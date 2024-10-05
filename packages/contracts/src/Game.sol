@@ -83,7 +83,7 @@ contract Game is IGame, Shuffle {
         for (uint256 i = 0; i < _totalPlayers; i++) {
             publicKeys[i] = _players[i].publicKey;
         }
-        // gameKey = revealVerifier.aggregateKeys(publicKeys);
+        gameKey = revealVerifier.aggregateKeys(publicKeys);
     }
 
     function initShuffle(
@@ -118,6 +118,7 @@ contract Game is IGame, Shuffle {
     function placeBet(uint256 _amount) public onlyPlayer(msg.sender) {
         _isPlayerTurn(msg.sender);
         _isValidBet(_amount);
+        _isShuffled();
 
         if (_currentRound == GameRound.End) {
             revert GameEnded();
@@ -138,6 +139,7 @@ contract Game is IGame, Shuffle {
 
     function fold() public onlyPlayer(msg.sender) {
         _isPlayerTurn(msg.sender);
+        _isShuffled();
         if (_isFolded[msg.sender]) {
             revert AlreadyFolded();
         }
@@ -305,5 +307,11 @@ contract Game is IGame, Shuffle {
             nextCard++;
         }
         _nextCard = nextCard;
+    }
+
+    function _isShuffled() internal view {
+        if (_totalShuffles != _totalPlayers) {
+            revert NotShuffled();
+        }
     }
 }

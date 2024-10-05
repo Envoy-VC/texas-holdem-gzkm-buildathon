@@ -12,7 +12,7 @@ contract AbiExport is Test {
     }
 
     function run() public {
-        string memory outDir = "abi/";
+        string memory outDir = "../../apps/www/public/abi/";
         string memory basePath = "src/";
         Contract memory contract1 = Contract({path: "Game.sol", name: "Game"});
         Contract memory contract2 = Contract({path: "GameFactory.sol", name: "GameFactory"});

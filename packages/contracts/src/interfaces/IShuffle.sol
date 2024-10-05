@@ -6,4 +6,6 @@ interface IShuffle {
     error ShuffleVerificationError();
     error RevealTokenVerificationError();
     error RevealTokenAlreadyExists();
+
+    error NotShuffled();
 }

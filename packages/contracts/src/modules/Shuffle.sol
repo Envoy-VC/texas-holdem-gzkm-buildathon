@@ -23,6 +23,9 @@ contract Shuffle is IShuffle {
 
     mapping(uint256 => RevealToken[]) public _revealTokens;
 
+    mapping(address => bool) _shuffled;
+    uint256 _totalShuffles;
+
     function _initShuffle(
         uint256[] calldata _publicKeyCommitment,
         uint256[4][52] calldata _oldDeck,
@@ -55,6 +58,8 @@ contract Shuffle is IShuffle {
         }
 
         deck = _newDeck;
+        _totalShuffles++;
+        _shuffled[msg.sender] = true;
     }
 
     function _shuffle(uint256[4][52] calldata _newDeck, bytes calldata _proof) internal {
@@ -81,6 +86,8 @@ contract Shuffle is IShuffle {
         }
 
         deck = _newDeck;
+        _totalShuffles++;
+        _shuffled[msg.sender] = true;
     }
 
     function checkAndAddRevealToken(uint8 index, RevealToken memory token) internal {

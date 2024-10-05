@@ -1,3 +1,7 @@
+import GAME_ABI from 'public/abi/Game.json';
+import GAME_FACTORY_ABI from 'public/abi/GameFactory.json';
+import AddressConfig from 'public/config.json';
+import type { Abi } from 'viem';
 import { mainnet } from 'viem/chains';
 import {
   type Config,
@@ -32,3 +36,12 @@ export const wagmiConfig: Config = createConfig({
     [opBNBTestnetFork.id]: http(),
   },
 });
+
+export const gameFactoryConfig = {
+  abi: GAME_FACTORY_ABI as Abi,
+  address: AddressConfig.GAME_FACTORY_ADDRESS as `0x${string}`,
+} as const;
+
+export const gameConfig = {
+  abi: GAME_ABI as Abi,
+} as const;
