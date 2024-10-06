@@ -12,7 +12,7 @@ import { ShuffleOverlay } from './shuffle';
 import { WaitingOverlay } from './waiting';
 
 export const GameOverlay = ({ contractAddress }: OverlayProps) => {
-  const { data } = useReadContracts({
+  const { data, refetch } = useReadContracts({
     contracts: [
       {
         ...gameConfig,
@@ -34,6 +34,11 @@ export const GameOverlay = ({ contractAddress }: OverlayProps) => {
         address: contractAddress,
         functionName: 'winner',
       },
+      {
+        ...gameConfig,
+        address: contractAddress,
+        functionName: '_gameStarted',
+      },
     ],
   });
 
@@ -49,8 +54,9 @@ export const GameOverlay = ({ contractAddress }: OverlayProps) => {
     const totalShuffles = Number(data?.[1].result ?? 0);
     const currentRound = Number(data?.[2].result ?? 0); // 5 is end
     const winnerAddr = data?.[3].result?.[0] ?? zeroAddress;
+    const hasGameStarted = data?.[4].result ?? false;
 
-    if (totalPlayers === 1) {
+    if (totalPlayers === 1 || !hasGameStarted) {
       currentStage = 'waiting';
       return currentStage;
     }
@@ -73,10 +79,18 @@ export const GameOverlay = ({ contractAddress }: OverlayProps) => {
     return currentStage;
   }, [data]);
 
+  const refreshData = async () => {
+    await refetch();
+  };
+
   if (stage === 'waiting') {
-    return <WaitingOverlay contractAddress={contractAddress} />;
+    return (
+      <WaitingOverlay contractAddress={contractAddress} refresh={refreshData} />
+    );
   } else if (stage === 'shuffle') {
-    return <ShuffleOverlay contractAddress={contractAddress} />;
+    return (
+      <ShuffleOverlay contractAddress={contractAddress} refresh={refreshData} />
+    );
   } else if (stage === 'started') {
     // TODO: Game started overlay
   } else if (stage === 'choose-cards') {

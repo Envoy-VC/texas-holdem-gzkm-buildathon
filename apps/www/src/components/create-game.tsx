@@ -9,13 +9,19 @@ import { errorHandler } from '~/lib/utils';
 import { gameConfig, gameFactoryConfig, wagmiConfig } from '~/lib/viem';
 
 import { readContract, waitForTransactionReceipt } from '@wagmi/core';
+import GoldBG from 'public/gold-bg.webp';
+import PokerBG from 'public/poker-bg.jpg';
 import { toast } from 'sonner';
 import { isAddress, keccak256 } from 'viem';
 import { useAccount, useWriteContract } from 'wagmi';
 
-import { Dialog, DialogTitle, DialogTrigger } from '~/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogTrigger,
+} from '~/components/ui/dialog';
 
-import { Overlay } from './overlay';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 
@@ -116,23 +122,39 @@ export const CreateGame = () => {
   return (
     <Dialog>
       <DialogTrigger>Create or Join a Game</DialogTrigger>
-      <DialogTitle />
-      <Overlay className='flex flex-col items-center gap-3'>
-        <div className='font-poker text-5xl'>Create or Join a Game</div>
-        <Button onClick={onCreate}>Create Game</Button>
-        <div>OR</div>
-        <div className='flex flex-row items-center gap-2'>
-          <Input
-            className='w-[24rem] translate-x-12 !rounded-3xl border-none outline-none'
-            placeholder='Enter Game ID'
-            value={gameId}
-            onChange={(e) => setGameId(e.target.value)}
-          />
-          <Button className='-translate-x-12 rounded-3xl' onClick={onJoin}>
-            Join Game
-          </Button>
+      <DialogContent>
+        <div
+          className='fixed left-[50%] top-[50%] z-50 flex translate-x-[-50%] translate-y-[-50%] gap-4 rounded-[6rem] border bg-background p-3'
+          style={{
+            backgroundImage: `url(${GoldBG.src})`,
+            objectFit: 'cover',
+          }}
+        >
+          <div
+            className='flex min-h-[20rem] w-full min-w-[36rem] flex-col items-center gap-4 rounded-[5rem] p-8'
+            style={{
+              backgroundImage: `url(${PokerBG.src})`,
+              objectFit: 'cover',
+            }}
+          >
+            <div className='font-poker text-5xl'>Create or Join a Game</div>
+            <Button onClick={onCreate}>Create Game</Button>
+            <div>OR</div>
+            <div className='flex flex-row items-center gap-2'>
+              <Input
+                className='w-[24rem] translate-x-12 !rounded-3xl border-none outline-none'
+                placeholder='Enter Game ID'
+                value={gameId}
+                onChange={(e) => setGameId(e.target.value)}
+              />
+              <Button className='-translate-x-12 rounded-3xl' onClick={onJoin}>
+                Join Game
+              </Button>
+            </div>
+          </div>
         </div>
-      </Overlay>
+      </DialogContent>
+      <DialogTitle />
     </Dialog>
   );
 };
