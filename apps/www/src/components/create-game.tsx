@@ -1,31 +1,31 @@
 'use client';
 
-import React from 'react';
+import { useRouter } from 'next/navigation';
+
+import React, { useState } from 'react';
 
 import { useShuffle } from '~/lib/hooks';
 import { errorHandler } from '~/lib/utils';
-import { gameFactoryConfig, wagmiConfig } from '~/lib/viem';
+import { gameConfig, gameFactoryConfig, wagmiConfig } from '~/lib/viem';
 
 import { readContract, waitForTransactionReceipt } from '@wagmi/core';
 import { toast } from 'sonner';
-import { keccak256 } from 'viem';
+import { isAddress, keccak256 } from 'viem';
 import { useAccount, useWriteContract } from 'wagmi';
 
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '~/components/ui/dialog';
+import { Dialog, DialogTitle, DialogTrigger } from '~/components/ui/dialog';
 
+import { Overlay } from './overlay';
 import { Button } from './ui/button';
+import { Input } from './ui/input';
 
 export const CreateGame = () => {
   const { address } = useAccount();
   const { writeContractAsync } = useWriteContract();
   const { getKey } = useShuffle();
+  const router = useRouter();
+
+  const [gameId, setGameId] = useState<string>('');
 
   const onCreate = async () => {
     try {
@@ -71,6 +71,43 @@ export const CreateGame = () => {
       toast.success('Game Created Successfully!', {
         description: `Id: ${gameAddress}`,
       });
+
+      router.push(`/game/${gameAddress}`);
+    } catch (error) {
+      console.log(error);
+      toast.error(errorHandler(error));
+    }
+  };
+
+  const onJoin = async () => {
+    const id = toast.loading('Joining Game...');
+    try {
+      if (!address) {
+        throw new Error('Please connect wallet.');
+      }
+      const isValidId = isAddress(gameId);
+      if (!isValidId) {
+        throw new Error('Invalid game ID.');
+      }
+      const contractAddress = gameId;
+      const key = await getKey(address);
+      const hash = await writeContractAsync({
+        ...gameConfig,
+        address: contractAddress,
+        functionName: 'joinGame',
+        args: [
+          {
+            addr: address,
+            publicKey: {
+              x: BigInt(key.pkxy[0]),
+              y: BigInt(key.pkxy[1]),
+            },
+          },
+        ],
+      });
+      await waitForTransactionReceipt(wagmiConfig, { hash });
+      toast.success('Game Joined Successfully!', { id });
+      router.push(`/game/${contractAddress}`);
     } catch (error) {
       console.log(error);
       toast.error(errorHandler(error));
@@ -79,14 +116,23 @@ export const CreateGame = () => {
   return (
     <Dialog>
       <DialogTrigger>Create or Join a Game</DialogTrigger>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle />
-          <DialogDescription>
-            <Button onClick={onCreate}>Create Game</Button>
-          </DialogDescription>
-        </DialogHeader>
-      </DialogContent>
+      <DialogTitle />
+      <Overlay className='flex flex-col items-center gap-3'>
+        <div className='font-poker text-5xl'>Create or Join a Game</div>
+        <Button onClick={onCreate}>Create Game</Button>
+        <div>OR</div>
+        <div className='flex flex-row items-center gap-2'>
+          <Input
+            className='w-[24rem] translate-x-12 !rounded-3xl border-none outline-none'
+            placeholder='Enter Game ID'
+            value={gameId}
+            onChange={(e) => setGameId(e.target.value)}
+          />
+          <Button className='-translate-x-12 rounded-3xl' onClick={onJoin}>
+            Join Game
+          </Button>
+        </div>
+      </Overlay>
     </Dialog>
   );
 };
