@@ -17,6 +17,11 @@ enum GameRound {
     End
 }
 
+struct PlayerWitWeight {
+    address addr;
+    uint256 weight;
+}
+
 interface IGame {
     error NotEnoughPlayers();
     error GameAlreadyStarted();

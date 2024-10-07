@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.26;
 
-import {IGame, Player, GameRound} from "./interfaces/IGame.sol";
+import {IGame, Player, GameRound, PlayerWitWeight} from "./interfaces/IGame.sol";
 import {ZgRevealVerifier, ZgShuffleVerifier, MaskedCard, Point} from "./secret-engine/Verifiers.sol";
 
 import {TexasPoker, PokerCard} from "./libraries/TexasPoker.sol";
@@ -18,6 +18,7 @@ contract Game is IGame, Shuffle {
     mapping(address => bool) public _isPlayer;
     uint8 public _totalPlayers;
 
+    mapping(uint256 => uint256) public _weights;
     Player public winner;
 
     // Bets
@@ -29,6 +30,7 @@ contract Game is IGame, Shuffle {
     bool public _gameStarted;
     GameRound public _currentRound;
     mapping(address => bool) public _isFolded;
+    uint256 public _totalFolds;
 
     // Cards
     mapping(uint256 => uint8[5]) public _playerCards;
@@ -66,6 +68,9 @@ contract Game is IGame, Shuffle {
         if (_isPlayer[_player.addr]) {
             revert AlreadyAPlayer();
         }
+        if (_gameStarted) {
+            revert GameAlreadyStarted();
+        }
         _players[_totalPlayers] = _player;
         _totalPlayers++;
         _isPlayer[_player.addr] = true;
@@ -86,26 +91,24 @@ contract Game is IGame, Shuffle {
         gameKey = revealVerifier.aggregateKeys(publicKeys);
     }
 
-    function initShuffle(
-        uint256[] calldata _publicKeyCommitment,
-        uint256[4][52] calldata _oldDeck,
-        uint256[4][52] calldata _newDeck,
-        bytes calldata _proof
-    ) public onlyPlayer(msg.sender) {
-        _initShuffle(_publicKeyCommitment, _oldDeck, _newDeck, _proof);
+    function initShuffle(uint256[] calldata _publicKeyCommitment, uint256[4][52] calldata _newDeck)
+        public
+        onlyPlayer(msg.sender)
+    {
+        _initShuffle(_publicKeyCommitment, _newDeck);
     }
 
-    function shuffle(uint256[4][52] calldata _newDeck, bytes calldata _proof) public onlyPlayer(msg.sender) {
-        _shuffle(_newDeck, _proof);
+    function shuffle(uint256[4][52] calldata _newDeck) public onlyPlayer(msg.sender) {
+        _shuffle(_newDeck);
     }
 
-    function addRevealToken(uint8 index, RevealToken calldata revealToken, uint256[8] calldata proof) public {
+    function addRevealToken(uint8 index, RevealToken calldata revealToken) public {
         Player memory player = getPlayer(msg.sender);
         if (player.addr == address(0)) {
             revert NotAPlayer();
         }
 
-        _addRevealToken(index, revealToken, proof, player);
+        _addRevealToken(index, revealToken);
     }
 
     function addMultipleRevealTokens(uint8[] memory indexes, RevealToken[] calldata revealTokens)
@@ -145,6 +148,7 @@ contract Game is IGame, Shuffle {
             revert AlreadyFolded();
         }
         _isFolded[msg.sender] = true;
+        _totalFolds++;
     }
 
     function chooseCards(uint8[3] memory cards) public onlyPlayer(msg.sender) {
@@ -186,28 +190,33 @@ contract Game is IGame, Shuffle {
         if (winner.addr != address(0)) {
             revert WinnerAlreadyDeclared();
         }
-        uint8[5][] memory revealedCards = new uint8[5][](_totalPlayers);
-        PokerCard[5][] memory cards = new PokerCard[5][](_totalPlayers);
-        uint256[] memory weights = new uint256[](_totalPlayers);
 
-        for (uint8 i = 0; i < _totalPlayers; i++) {
-            revealedCards[i] = revealMultipleCards(_playerCards[i]);
+        Player[] memory players = getPlayersInGame();
+
+        uint8[5][] memory revealedCards = new uint8[5][](players.length);
+        PokerCard[5][] memory cards = new PokerCard[5][](players.length);
+        uint256[] memory weights = new uint256[](players.length);
+
+        for (uint256 i = 0; i < players.length; i++) {
+            uint256 index = getPlayerIndex(players[i].addr);
+            revealedCards[i] = revealMultipleCards(_playerCards[index]);
             cards[i] = TexasPoker.toPokerCards(revealedCards[i]);
             weights[i] = TexasPoker.getWeight(cards[i]);
+            _weights[index] = weights[i];
         }
 
         // Get index of largest weight
         uint256 maxIndex = 0;
-        for (uint8 i = 1; i < _totalPlayers; i++) {
+        for (uint256 i = 1; i < _totalPlayers; i++) {
             if (weights[i] > weights[maxIndex]) {
                 maxIndex = i;
             }
         }
 
-        winner = _players[maxIndex];
-
+        uint256 winnerIndex = getPlayerIndex(players[maxIndex].addr);
+        winner = players[winnerIndex];
         // Move pot to winner
-        for (uint8 i = 0; i < _totalPlayers; i++) {
+        for (uint256 i = 0; i < _totalPlayers; i++) {
             _bets[_players[i].addr] = 0;
         }
         _bets[winner.addr] = getPotAmount();
@@ -217,11 +226,20 @@ contract Game is IGame, Shuffle {
     ///                         View Functions
     /// =================================================================
 
+    function getDeck() public view returns (uint256[4][] memory) {
+        return deck;
+    }
+
+    function getPublicKeyCommitment() public view returns (uint256[] memory) {
+        return publicKeyCommitment;
+    }
+
     function getPlayer(address addr) public view returns (Player memory) {
         Player memory player;
         for (uint8 i = 0; i < _totalPlayers; i++) {
             if (_players[i].addr == addr) {
                 player = _players[i];
+                break;
             }
         }
         return player;
@@ -240,17 +258,99 @@ contract Game is IGame, Shuffle {
     }
 
     function getPlayerCards(address player) public view returns (uint8[5] memory) {
-        uint256 index = 0;
-        for (uint256 i = 0; i < _totalPlayers; i++) {
-            if (_players[i].addr == player) {
-                index = i;
+        uint256 index = getPlayerIndex(player);
+        return _playerCards[index];
+    }
+
+    function getPlayerWeight(address player) public view returns (uint256) {
+        uint256 index = getPlayerIndex(player);
+        return _weights[index];
+    }
+
+    function getAllWeights() public view returns (PlayerWitWeight[] memory) {
+        PlayerWitWeight[] memory players = new PlayerWitWeight[](_totalPlayers);
+        for (uint8 i = 0; i < _totalPlayers; i++) {
+            players[i] = PlayerWitWeight(_players[i].addr, _weights[i]);
+        }
+        return players;
+    }
+
+    function getPlayerRevealedCards(address player) public view returns (uint8[] memory) {
+        uint256 index = getPlayerIndex(player);
+        uint8[] memory cards = new uint8[](5);
+        for (uint8 i = 0; i < 5; i++) {
+            if (_playerCards[index][i] != 0) {
+                cards[i] = revealCard(_playerCards[index][i]);
             }
         }
-        return _playerCards[index];
+        return cards;
     }
 
     function getCommunityCards() public view returns (uint8[5] memory) {
         return _communityCards;
+    }
+
+    function getPlayersInGame() public view returns (Player[] memory) {
+        Player[] memory players = new Player[](_totalPlayers - _totalFolds);
+        for (uint256 i = 0; i < _totalPlayers - _totalFolds; i++) {
+            if (!_isFolded[_players[i].addr]) {
+                players[i] = _players[i];
+            }
+        }
+
+        return players;
+    }
+
+    function getRevealedCommunityCards() public view returns (uint8[] memory) {
+        uint8[] memory cards = new uint8[](5);
+        for (uint8 i = 0; i < 5; i++) {
+            if (_communityCards[i] != 0) {
+                cards[i] = revealCard(_communityCards[i]);
+            }
+        }
+
+        return cards;
+    }
+
+    function getPendingCommunityRevealTokens(address user) public view returns (uint8[] memory) {
+        uint8[] memory cards = new uint8[](5);
+        for (uint8 i = 0; i < 5; i++) {
+            if (_communityCards[i] != 0) {
+                bool hasRevealToken = hasRevealToken(_communityCards[i], user);
+                if (!hasRevealToken) {
+                    cards[i] = _communityCards[i];
+                }
+            }
+        }
+
+        return cards;
+    }
+
+    function getPendingPlayerRevealTokens(address user) public view returns (uint8[] memory) {
+        uint8[] memory cards = new uint8[](_totalPlayers * 2);
+        for (uint256 i = 0; i < _totalPlayers; i++) {
+            if (_players[i].addr != user) {
+                uint8[5] memory pCards = _playerCards[i];
+                for (uint256 j = 0; j < 2; j++) {
+                    bool hasRevealToken = hasRevealToken(pCards[j], user);
+                    if (!hasRevealToken) {
+                        cards[j] = pCards[j];
+                    }
+                }
+            } else {
+                if (_currentRound == GameRound.End) {
+                    uint8[5] memory pCards = _playerCards[i];
+                    for (uint256 j = 0; j < 2; j++) {
+                        bool hasRevealToken = hasRevealToken(pCards[j], user);
+                        if (!hasRevealToken) {
+                            cards[j] = pCards[j];
+                        }
+                    }
+                }
+            }
+        }
+
+        return cards;
     }
 
     /// =================================================================

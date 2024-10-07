@@ -8,4 +8,6 @@ interface IShuffle {
     error RevealTokenAlreadyExists();
 
     error NotShuffled();
+
+    error NotEqualIndexesAndRevealTokens();
 }

@@ -8,6 +8,50 @@ import {TexasPoker, CardType, CardSuit, PokerCard, Result} from "src/libraries/T
 contract TexasPokerTest is Test {
     function setUp() public virtual {}
 
+    function printCard(PokerCard memory card) internal pure {
+        string memory cardType;
+        string memory cardValue;
+        if (card.cardType == CardType.Ace) {
+            cardType = "Ace";
+        } else if (card.cardType == CardType.King) {
+            cardType = "King";
+        } else if (card.cardType == CardType.Queen) {
+            cardType = "cardType";
+        } else if (card.cardType == CardType.Jack) {
+            cardType = "Jack";
+        } else if (card.cardType == CardType.Ten) {
+            cardType = "Ten";
+        } else if (card.cardType == CardType.Nine) {
+            cardType = "Nine";
+        } else if (card.cardType == CardType.Eight) {
+            cardType = "Eight";
+        } else if (card.cardType == CardType.Seven) {
+            cardType = "Seven";
+        } else if (card.cardType == CardType.Six) {
+            cardType = "Six";
+        } else if (card.cardType == CardType.Five) {
+            cardType = "Five";
+        } else if (card.cardType == CardType.Four) {
+            cardType = "Four";
+        } else if (card.cardType == CardType.Three) {
+            cardType = "Three";
+        } else if (card.cardType == CardType.Two) {
+            cardType = "Two";
+        }
+
+        if (card.cardSuit == CardSuit.Spade) {
+            cardValue = "Spade";
+        } else if (card.cardSuit == CardSuit.Heart) {
+            cardValue = "Heart";
+        } else if (card.cardSuit == CardSuit.Diamond) {
+            cardValue = "Diamond";
+        } else if (card.cardSuit == CardSuit.Club) {
+            cardValue = "Club";
+        }
+
+        console.log("%s %s", cardType, cardValue);
+    }
+
     function test_RoyalFlush() public {
         // AS KS QS JS TS
         PokerCard[5] memory hand;
@@ -157,6 +201,18 @@ contract TexasPokerTest is Test {
 
         Result result = TexasPoker.compare(hand1, hand2);
         assertEq(uint256(result), uint256(Result.Tie));
+    }
+
+    function test_toPokerCards() public {
+        uint8[5] memory cards = [33, 51, 6, 48, 26];
+        PokerCard[5] memory hand = TexasPoker.toPokerCards(cards);
+
+        for (uint256 i = 0; i < 5; i++) {
+            printCard(hand[i]);
+        }
+
+        uint256 weight = TexasPoker.getWeight(hand);
+        console.log("Weight: ", weight);
     }
 
     function test_Win() public {

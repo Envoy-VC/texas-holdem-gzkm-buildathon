@@ -2,8 +2,7 @@ import { handle } from '@hono/node-server/vercel';
 import * as SE from '@zypher-game/secret-engine';
 import { Hono } from 'hono';
 import type { PageConfig } from 'next';
-
-import type { Key } from '~/types/zypher';
+import { type Hex } from 'viem';
 
 export const config: PageConfig = {
   api: {
@@ -11,13 +10,127 @@ export const config: PageConfig = {
   },
 };
 
+const DECK_SIZE = 52;
+
 const app = new Hono().basePath('/api');
 
-app.get('/hello', (c) => {
-  const key = SE.generate_key() as Key;
-
-  console.log(key);
+app.get('/generate-key', (c) => {
+  const key = SE.generate_key();
   return c.json(key);
+});
+
+app.post('/first-shuffle', async (c) => {
+  const body = (await c.req.json()) as unknown;
+  const gameKey = (body as { gameKey: [string, string] }).gameKey;
+
+  SE.init_prover_key(DECK_SIZE);
+  const gameKeyCompressed = SE.public_compress([gameKey[0], gameKey[1]]);
+  const pkc = SE.refresh_joint_key(gameKeyCompressed, DECK_SIZE);
+  const maskedDeck = SE.init_masked_cards(gameKeyCompressed, DECK_SIZE);
+  const oldDeck = maskedDeck.map((masked) => masked.card);
+
+  const firstShuffled = SE.shuffle_cards(gameKeyCompressed, oldDeck);
+  const newDeck = firstShuffled.cards;
+
+  const firstVerify = SE.verify_shuffled_cards(
+    oldDeck,
+    firstShuffled.cards,
+    firstShuffled.proof
+  );
+
+  return c.json({
+    pkc,
+    oldDeck,
+    newDeck,
+    proof: firstShuffled.proof,
+    verified: firstVerify,
+  });
+});
+
+app.post('/shuffle', async (c) => {
+  const body = (await c.req.json()) as unknown;
+  const b = body as {
+    oldDeck: [Hex, Hex, Hex, Hex][];
+    gameKey: [Hex, Hex];
+  };
+
+  const gameKeyCompressed = SE.public_compress([b.gameKey[0], b.gameKey[1]]);
+  const secondShuffled = SE.shuffle_cards(gameKeyCompressed, b.oldDeck);
+  console.log(secondShuffled);
+
+  const verified = SE.verify_shuffled_cards(
+    b.oldDeck,
+    secondShuffled.cards,
+    secondShuffled.proof
+  );
+
+  return c.json({ shuffled: secondShuffled, verified });
+});
+
+app.post('/get-reveal-token', async (c) => {
+  const body = (await c.req.json()) as unknown;
+  const b = body as {
+    card: [Hex, Hex, Hex, Hex];
+    sk: Hex;
+  };
+
+  const revealKey = SE.reveal_card(b.sk, b.card);
+
+  return c.json(revealKey);
+});
+
+app.post('/unmask-card', async (c) => {
+  try {
+    const body = (await c.req.json()) as unknown;
+    const b = body as {
+      card: [Hex, Hex, Hex, Hex];
+      sk: Hex;
+      tokens: [Hex, Hex][];
+    };
+
+    const result = SE.unmask_card(b.sk, b.card, b.tokens);
+
+    return c.json({ result });
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+app.post('/get-reveal-tokens', async (c) => {
+  const body = (await c.req.json()) as unknown;
+  const b = body as {
+    cards: [Hex, Hex, Hex, Hex][];
+    sk: Hex;
+  };
+
+  const revealKeys = [];
+  for (const card of b.cards) {
+    revealKeys.push(SE.reveal_card(b.sk, card));
+  }
+
+  return c.json({ revealKeys });
+});
+
+app.post('/unmask-cards', async (c) => {
+  const body = (await c.req.json()) as unknown;
+  const b = body as {
+    cards: [Hex, Hex, Hex, Hex][];
+    sk: Hex;
+    tokens: [Hex, Hex][][];
+  };
+
+  const result: number[] = [];
+
+  console.log(b);
+
+  for (let i = 0; i < b.cards.length; i++) {
+    const tokens = b.tokens[i];
+    const unmasked = SE.unmask_card(b.sk, b.cards[i], tokens);
+    console.log('Unmasked: ', unmasked);
+    result.push(unmasked);
+  }
+
+  return c.json({ result });
 });
 
 // eslint-disable-next-line import/no-default-export -- required

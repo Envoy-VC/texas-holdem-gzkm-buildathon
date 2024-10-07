@@ -11,7 +11,7 @@ export const useShuffle = () => {
     let key;
     key = keys[address];
     if (!key) {
-      key = (await generateKey()) as Key;
+      key = await generateKey();
       const newKeys = keys;
       newKeys[address] = key;
       setKeys(newKeys);
