@@ -10,7 +10,7 @@ const GameLayout = ({ children }: PropsWithChildren) => {
       <div className='absolute z-[-1] flex h-screen w-full items-center justify-center'>
         <Image
           alt='Poker table'
-          className='w-full max-w-7xl'
+          className='w-full max-w-7xl pt-24'
           src={PokerTableImage}
         />
       </div>

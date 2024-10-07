@@ -214,7 +214,7 @@ contract Game is IGame, Shuffle {
         }
 
         uint256 winnerIndex = getPlayerIndex(players[maxIndex].addr);
-        winner = players[winnerIndex];
+        winner = _players[winnerIndex];
         // Move pot to winner
         for (uint256 i = 0; i < _totalPlayers; i++) {
             _bets[_players[i].addr] = 0;

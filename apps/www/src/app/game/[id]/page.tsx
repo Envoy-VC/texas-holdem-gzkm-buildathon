@@ -1,26 +1,24 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useMemo } from 'react';
 
-import { useShuffle } from '~/lib/hooks';
-import { getRevealKeys, unmaskCards } from '~/lib/shuffle';
-import { gameConfig, wagmiConfig } from '~/lib/viem';
-import { getDeck } from '~/lib/viem/actions';
+import { getCurrentRound } from '~/lib/helpers';
+import { truncate } from '~/lib/utils';
+import { gameConfig } from '~/lib/viem';
 
-import { readContract, waitForTransactionReceipt } from '@wagmi/core';
-import { toast } from 'sonner';
-import { type Hex, hexToBigInt, isAddress, toHex, zeroAddress } from 'viem';
-import { useAccount, useReadContracts, useWriteContract } from 'wagmi';
+import MotionNumber from 'motion-number';
+import { isAddress, zeroAddress } from 'viem';
+import { useAccount, useReadContracts } from 'wagmi';
 
 import { GameOverlay } from '~/components/overlays';
-import { Button } from '~/components/ui/button';
-import { Input } from '~/components/ui/input';
+
+import { GameStatistics, PlaceBet, Results } from './_components';
+import { CommunityCards } from './_components/community-cards';
 
 const GamePage = ({ params }: { params: { id: `0x${string}` } }) => {
   const contractAddress = isAddress(params.id) ? params.id : zeroAddress;
 
   const { address } = useAccount();
-  const { getKey } = useShuffle();
 
   // const { data, refetch } = useReadContracts({
   //   contracts: [
@@ -220,9 +218,111 @@ const GamePage = ({ params }: { params: { id: `0x${string}` } }) => {
   //   await waitForTransactionReceipt(wagmiConfig, { hash: res });
   // };
 
+  const res = useReadContracts({
+    contracts: [
+      {
+        ...gameConfig,
+        address: contractAddress,
+        functionName: '_currentRound',
+      },
+      {
+        ...gameConfig,
+        address: contractAddress,
+        functionName: 'getPotAmount',
+      },
+      {
+        ...gameConfig,
+        address: contractAddress,
+        functionName: '_highestBet',
+      },
+      {
+        ...gameConfig,
+        address: contractAddress,
+        functionName: 'winner',
+      },
+      {
+        ...gameConfig,
+        address: contractAddress,
+        functionName: 'nextPlayer',
+      },
+      {
+        ...gameConfig,
+        address: contractAddress,
+        functionName: '_totalPlayers',
+      },
+      {
+        ...gameConfig,
+        address: contractAddress,
+        functionName: 'winner',
+      },
+      {
+        ...gameConfig,
+        address: contractAddress,
+        functionName: 'getCommunityCards',
+      },
+    ],
+  });
+
+  const data = useMemo(() => {
+    const currentRound = getCurrentRound(res.data?.[0].result ?? 0);
+    const potAmount = Number(res.data?.[1].result ?? 0);
+    const highestBet = Number(res.data?.[2].result ?? 0);
+    const winnerAddress = res.data?.[3].result?.[0] ?? zeroAddress;
+    const nextTurn =
+      res.data?.[4].result?.addr === address
+        ? 'Me'
+        : truncate(res.data?.[4].result?.addr ?? '', 8);
+    const playerCount = Number(res.data?.[5].result ?? 0);
+    const gameEnded = res.data?.[6].result?.[0] !== zeroAddress;
+    const communityCards = res.data?.[7].result?.map((c) => c) ?? [];
+
+    return {
+      currentRound,
+      potAmount,
+      highestBet,
+      winnerAddress,
+      nextTurn,
+      playerCount,
+      gameEnded,
+      communityCards,
+    };
+  }, [address, res.data]);
+
   return (
     <div>
       <GameOverlay contractAddress={contractAddress} />
+      <div className='flex flex-col'>
+        <div className='absolute right-1/2 top-24 mx-auto flex w-fit translate-x-1/2 flex-col gap-2'>
+          <div className='text-center font-poker text-3xl font-medium text-neutral-200'>
+            {data.currentRound}
+          </div>
+          <MotionNumber
+            className='rounded-full border-2 border-[#70AF8A] bg-[#204D39] px-8 py-4 text-5xl'
+            format={{ style: 'currency', currency: 'USD' }}
+            value={data.potAmount}
+          />
+        </div>
+        <GameStatistics
+          highestBid={data.highestBet}
+          nextTurn={data.nextTurn}
+          winner={data.winnerAddress}
+        />
+      </div>
+      <PlaceBet
+        contractAddress={contractAddress}
+        highestBet={data.highestBet}
+        isMyTurn={data.nextTurn === 'Me'}
+      />
+      {data.gameEnded ? (
+        <Results
+          contractAddress={contractAddress}
+          totalPlayers={data.playerCount}
+        />
+      ) : null}
+      <CommunityCards
+        cards={data.communityCards}
+        contractAddress={contractAddress}
+      />
       {/* <div className='flex w-fit flex-col gap-2'>
         <div>Current Round: {data?.[0].result}</div>
         <div>Pot Amount: {data?.[1].result?.toLocaleString()} USD</div>
