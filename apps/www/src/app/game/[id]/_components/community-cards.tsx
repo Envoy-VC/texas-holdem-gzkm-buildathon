@@ -43,6 +43,8 @@ interface CommunityCardProps {
 const CommunityCard = ({ contractAddress, cardIndex }: CommunityCardProps) => {
   const data = useQuery({
     queryKey: ['community-card', contractAddress, cardIndex],
+    initialData: -1,
+    refetchInterval: 2000,
     queryFn: async () => {
       try {
         const card = await readContract(wagmiConfig, {
@@ -59,5 +61,5 @@ const CommunityCard = ({ contractAddress, cardIndex }: CommunityCardProps) => {
     },
   });
 
-  return <PokerCard cardId={data.data ?? -1} className='w-20 rounded-lg' />;
+  return <PokerCard cardId={data.data} className='w-20 rounded-lg' />;
 };

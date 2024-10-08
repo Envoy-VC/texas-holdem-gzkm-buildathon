@@ -20,11 +20,13 @@ import type { OverlayProps } from '~/types';
 import { Overlay } from '../overlay';
 import { Button } from '../ui/button';
 
+import { RefreshCcw } from 'lucide-react';
+
 export const ShuffleOverlay = ({ contractAddress, refresh }: OverlayProps) => {
   const { address } = useAccount();
   const { writeContractAsync } = useWriteContract();
 
-  const { data } = useReadContracts({
+  const { data, refetch } = useReadContracts({
     contracts: [
       {
         ...gameConfig,
@@ -120,7 +122,16 @@ export const ShuffleOverlay = ({ contractAddress, refresh }: OverlayProps) => {
   return (
     <Overlay>
       <div className='w-full'>
-        <div className='text-center font-poker text-4xl'>Shuffle Stage</div>
+        <div className='flex flex-row items-center justify-center gap-2 text-center font-poker text-4xl'>
+          Shuffle Stage
+          <Button
+            className='h-10 w-10 !p-0 font-sans'
+            variant='link'
+            onClick={async () => await refetch()}
+          >
+            <RefreshCcw size={24} />
+          </Button>
+        </div>
         <div className='py-5 text-center font-poker text-5xl'>
           {playersShuffled} / {totalPlayers}
         </div>{' '}

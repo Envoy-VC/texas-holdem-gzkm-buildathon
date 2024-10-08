@@ -113,6 +113,7 @@ const PlayerCard = ({ cardIndex, contractAddress, deck }: PlayerCard) => {
   const { data } = useQuery({
     queryKey: ['player-card', contractAddress, cardIndex],
     initialData: -1,
+    refetchInterval: 2000,
     queryFn: async () => {
       try {
         if (!address) {
