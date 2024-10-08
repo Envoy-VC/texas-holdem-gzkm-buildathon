@@ -2,7 +2,7 @@
 
 import React, { useMemo } from 'react';
 
-import { firstShuffle, shuffle } from '~/lib/shuffle';
+import { firstShuffle, getMaskedCads, shuffle } from '~/lib/shuffle';
 import { errorHandler } from '~/lib/utils';
 import { gameConfig, wagmiConfig } from '~/lib/viem';
 import { getDeck, getGameKey } from '~/lib/viem/actions';
@@ -74,8 +74,9 @@ export const ShuffleOverlay = ({ contractAddress, refresh }: OverlayProps) => {
       });
 
       if (Number(totalShuffles) === 0) {
-        const res = await firstShuffle(gameKey);
-        const pkc = res.pkc.map((p) => hexToBigInt(p, { size: 32 }));
+        const { maskedCards, pkc: _pkc } = await getMaskedCads(gameKey);
+        const res = await firstShuffle(gameKey, maskedCards);
+        const pkc = _pkc.map((p) => hexToBigInt(p, { size: 32 }));
         const newDeck = res.newDeck.map((o) =>
           o.map((i) => hexToBigInt(i, { size: 32 }))
         );

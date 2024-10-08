@@ -20,7 +20,7 @@ app.get('/generate-key', (c) => {
   return c.json(key);
 });
 
-app.post('/first-shuffle', async (c) => {
+app.post('/get-masked-cards', async (c) => {
   const body = (await c.req.json()) as unknown;
   const gameKey = (body as { gameKey: [string, string] }).gameKey;
 
@@ -30,21 +30,30 @@ app.post('/first-shuffle', async (c) => {
   const maskedDeck = SE.init_masked_cards(gameKeyCompressed, DECK_SIZE);
   const oldDeck = maskedDeck.map((masked) => masked.card);
 
-  const firstShuffled = SE.shuffle_cards(gameKeyCompressed, oldDeck);
-  const newDeck = firstShuffled.cards;
-
-  const firstVerify = SE.verify_shuffled_cards(
-    oldDeck,
-    firstShuffled.cards,
-    firstShuffled.proof
-  );
-
   return c.json({
     pkc,
-    oldDeck,
+    maskedCards: oldDeck,
+  });
+});
+
+app.post('/first-shuffle', async (c) => {
+  const body = (await c.req.json()) as unknown;
+  const b = body as {
+    gameKey: [string, string];
+    maskedCards: [Hex, Hex, Hex, Hex][];
+  };
+  const gameKey = b.gameKey;
+
+  SE.init_prover_key(DECK_SIZE);
+  const gameKeyCompressed = SE.public_compress([gameKey[0], gameKey[1]]);
+  SE.refresh_joint_key(gameKeyCompressed, DECK_SIZE);
+
+  const firstShuffled = SE.shuffle_cards(gameKeyCompressed, b.maskedCards);
+  const newDeck = firstShuffled.cards;
+
+  return c.json({
     newDeck,
     proof: firstShuffled.proof,
-    verified: firstVerify,
   });
 });
 
@@ -59,13 +68,7 @@ app.post('/shuffle', async (c) => {
   const secondShuffled = SE.shuffle_cards(gameKeyCompressed, b.oldDeck);
   console.log(secondShuffled);
 
-  const verified = SE.verify_shuffled_cards(
-    b.oldDeck,
-    secondShuffled.cards,
-    secondShuffled.proof
-  );
-
-  return c.json({ shuffled: secondShuffled, verified });
+  return c.json({ shuffled: secondShuffled });
 });
 
 app.post('/get-reveal-token', async (c) => {

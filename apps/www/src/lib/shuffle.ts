@@ -6,8 +6,8 @@ export const generateKey = async () => {
   }).then(async (res) => (await res.json()) as Key);
 };
 
-export const firstShuffle = async (gameKey: [string, string]) => {
-  return fetch('/api/first-shuffle', {
+export const getMaskedCads = async (gameKey: [string, string]) => {
+  return fetch('/api/get-masked-cards', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -17,10 +17,26 @@ export const firstShuffle = async (gameKey: [string, string]) => {
     async (res) =>
       (await res.json()) as {
         pkc: Hex[];
-        oldDeck: [Hex, Hex, Hex, Hex][];
+        maskedCards: [Hex, Hex, Hex, Hex][];
+      }
+  );
+};
+
+export const firstShuffle = async (
+  gameKey: [string, string],
+  maskedCards: [Hex, Hex, Hex, Hex][]
+) => {
+  return fetch('/api/first-shuffle', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ gameKey, maskedCards }),
+  }).then(
+    async (res) =>
+      (await res.json()) as {
         newDeck: [Hex, Hex, Hex, Hex][];
         proof: Hex;
-        verified: boolean;
       }
   );
 };
@@ -42,7 +58,6 @@ export const shuffle = async (
           cards: [Hex, Hex, Hex, Hex][];
           proof: Hex;
         };
-        verified: boolean;
       }
   );
 };
