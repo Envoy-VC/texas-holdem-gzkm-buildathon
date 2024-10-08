@@ -1,5 +1,4 @@
 import AddressConfig from 'public/config.json';
-import type { Abi } from 'viem';
 import { opBNBTestnet } from 'viem/chains';
 import {
   type Config,
