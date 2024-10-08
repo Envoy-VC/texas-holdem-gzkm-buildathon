@@ -34,42 +34,41 @@ export const PlayerCards = ({
   deck,
 }: PlayerCardsProps) => {
   const maxRotation = 20;
-  const midIndex = (cards.length - 1) / 2;
+  const filteredCards = cards.filter((c) => c !== 0);
+  const midIndex = (filteredCards.length - 1) / 2;
   const [activeTab, setActiveTab] = useState<'hand' | 'off-hand'>('hand');
 
   return (
     <>
       <div className='absolute bottom-0 right-1/2 z-[3] translate-x-1/2 overflow-y-hidden'>
         <div className='flex h-[24rem] w-[66rem] flex-row items-end justify-center gap-2'>
-          {cards
-            .filter((c) => c !== 0)
-            .map((card, index) => {
-              const relativeIndex = index - midIndex;
-              const rotation = relativeIndex * (maxRotation / midIndex);
-              const translateY = Math.pow(Math.abs(relativeIndex), 2) * 15 + 10;
-              const translateX = relativeIndex * -60;
+          {filteredCards.map((card, index) => {
+            const relativeIndex = index - midIndex;
+            const rotation = relativeIndex * (maxRotation / midIndex);
+            const translateY = Math.pow(Math.abs(relativeIndex), 2) * 15 + 10;
+            const translateX = relativeIndex * -60;
 
-              return (
-                <motion.div
-                  key={card}
-                  transition={{ type: 'spring', stiffness: 100 }}
-                  animate={{
-                    translateX: activeTab === 'hand' ? translateX : 0,
-                    translateY: activeTab === 'hand' ? translateY : -100,
-                    rotateZ: activeTab === 'hand' ? rotation : 0,
-                  }}
-                  style={{
-                    zIndex: 3,
-                  }}
-                >
-                  <PlayerCard
-                    cardIndex={card}
-                    contractAddress={contractAddress}
-                    deck={deck}
-                  />
-                </motion.div>
-              );
-            })}
+            return (
+              <motion.div
+                key={card}
+                transition={{ type: 'spring', stiffness: 100 }}
+                animate={{
+                  translateX: activeTab === 'hand' ? translateX : 0,
+                  translateY: activeTab === 'hand' ? translateY : -100,
+                  rotateZ: activeTab === 'hand' ? rotation : 0,
+                }}
+                style={{
+                  zIndex: 3,
+                }}
+              >
+                <PlayerCard
+                  cardIndex={card}
+                  contractAddress={contractAddress}
+                  deck={deck}
+                />
+              </motion.div>
+            );
+          })}
         </div>
       </div>
       <div className='absolute bottom-0 right-1/2 z-[4] translate-x-1/2'>

@@ -1,3 +1,5 @@
+import Link from 'next/link';
+
 import React from 'react';
 
 import { CreateGame } from '../create-game';
@@ -11,6 +13,7 @@ export const Navbar = () => {
           Texas Hold&lsquo;em
         </div>
         <div className='flex flex-row items-center gap-3'>
+          <Link href='/game'>Games</Link>
           <CreateGame />
           <ConnectButton />
         </div>

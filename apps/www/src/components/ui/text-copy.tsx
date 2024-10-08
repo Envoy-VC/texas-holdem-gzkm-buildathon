@@ -25,7 +25,7 @@ import {
 } from 'lucide-react';
 
 const TextCopyContext = createContext<{
-  toCopy?: string;
+  toCopy: string;
   type?: 'text' | 'password';
   truncateOptions?: {
     enabled?: boolean;
@@ -49,7 +49,7 @@ const TextCopyContext = createContext<{
 });
 
 interface TextCopyProps extends ComponentProps<'div'> {
-  toCopy?: string;
+  toCopy: string;
   type?: 'text' | 'password';
   truncateOptions?: {
     enabled?: boolean;
@@ -102,12 +102,16 @@ export const TextCopyContent = forwardRef<HTMLDivElement, TextCopyContentProps>(
       <div className={cn('font-medium', className)} {...props} ref={ref}>
         {type === 'text'
           ? truncateOptions?.enabled
-            ? truncate(toCopy ?? '', length, truncateOptions.fromMiddle)
+            ? truncate(
+                toCopy,
+                truncateOptions.length,
+                truncateOptions.fromMiddle
+              )
             : toCopy
           : hidden
             ? '*'.repeat(24)
             : truncateOptions?.enabled
-              ? truncate(toCopy ?? '', length, truncateOptions.fromMiddle)
+              ? truncate(toCopy, length, truncateOptions.fromMiddle)
               : toCopy}
       </div>
     );
@@ -141,7 +145,7 @@ export const TextCopyButton = forwardRef<
 
   const copyText = async () => {
     try {
-      await copy(toCopy ?? '');
+      await copy(toCopy);
       setCopied(true);
     } catch (error) {
       errorHandler(error);

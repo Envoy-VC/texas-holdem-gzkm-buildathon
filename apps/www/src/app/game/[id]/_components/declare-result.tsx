@@ -18,9 +18,13 @@ import {
 
 interface DeclareResultProps {
   contractAddress: `0x${string}`;
+  refresh: () => Promise<void>;
 }
 
-export const DeclareResult = ({ contractAddress }: DeclareResultProps) => {
+export const DeclareResult = ({
+  contractAddress,
+  refresh,
+}: DeclareResultProps) => {
   const { writeContractAsync, isPending } = useWriteContract();
   const onDeclare = async () => {
     const id = toast.loading('Declaring Result...');
@@ -32,6 +36,7 @@ export const DeclareResult = ({ contractAddress }: DeclareResultProps) => {
         args: [],
       });
       await waitForTransactionReceipt(wagmiConfig, { hash });
+      await refresh();
       toast.success('Result Declared Successfully!', { id });
     } catch (error) {
       toast.error(errorHandler(error), { id });

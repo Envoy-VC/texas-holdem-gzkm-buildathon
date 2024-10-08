@@ -34,6 +34,7 @@ export const CreateGame = () => {
   const [gameId, setGameId] = useState<string>('');
 
   const onCreate = async () => {
+    const id = toast.loading('Creating Game...');
     try {
       if (!address) {
         throw new Error('Please connect wallet.');
@@ -75,13 +76,14 @@ export const CreateGame = () => {
       });
       console.log(gameAddress);
       toast.success('Game Created Successfully!', {
-        description: `Id: ${gameAddress}`,
+        description: `ID: ${gameAddress}`,
+        id,
       });
 
       router.push(`/game/${gameAddress}`);
     } catch (error) {
       console.log(error);
-      toast.error(errorHandler(error));
+      toast.error(errorHandler(error), { id });
     }
   };
 

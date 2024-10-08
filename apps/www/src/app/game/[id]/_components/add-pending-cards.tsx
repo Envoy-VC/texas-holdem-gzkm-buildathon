@@ -23,6 +23,7 @@ interface AddPendingCardsProps {
   pendingCards: number[];
   isPending: boolean;
   deck: Hex[][];
+  refresh: () => Promise<void>;
 }
 
 export const AddPendingCards = ({
@@ -30,6 +31,7 @@ export const AddPendingCards = ({
   pendingCards,
   isPending,
   deck,
+  refresh,
 }: AddPendingCardsProps) => {
   const { writeContractAsync } = useWriteContract();
   const { address } = useAccount();
@@ -61,6 +63,7 @@ export const AddPendingCards = ({
         args: [pendingCards, revealTokens],
       });
       await waitForTransactionReceipt(wagmiConfig, { hash });
+      await refresh();
     },
   });
   return (

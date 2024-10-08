@@ -22,12 +22,14 @@ interface PlaceBetProps {
   contractAddress: `0x${string}`;
   highestBet: number;
   isMyTurn: boolean;
+  refresh: () => Promise<void>;
 }
 
 export const PlaceBet = ({
   contractAddress,
   highestBet,
   isMyTurn,
+  refresh,
 }: PlaceBetProps) => {
   const { writeContractAsync } = useWriteContract();
   const { address } = useAccount();
@@ -57,6 +59,7 @@ export const PlaceBet = ({
           args: [BigInt(betAmount)],
         });
         await waitForTransactionReceipt(wagmiConfig, { hash });
+        await refresh();
         toast.success('Bet placed successfully!', { id });
         setBetAmount('');
       } catch (error) {
@@ -81,10 +84,9 @@ export const PlaceBet = ({
           />
           <Button
             className='-translate-x-5 rounded-full bg-neutral-300 px-6'
-            disabled={isPending}
             onClick={async () => await mutateAsync()}
           >
-            Bet
+            {isPending ? 'Betting...' : 'Bet'}
           </Button>
         </PopoverContent>
       </Popover>

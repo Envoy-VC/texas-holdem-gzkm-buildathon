@@ -141,6 +141,10 @@ const GamePage = ({ params }: { params: { id: `0x${string}` } }) => {
     };
   }, [address, res]);
 
+  const refresh = async () => {
+    await refetch();
+  };
+
   return (
     <div className=''>
       <GameOverlay contractAddress={contractAddress} />
@@ -165,6 +169,7 @@ const GamePage = ({ params }: { params: { id: `0x${string}` } }) => {
         contractAddress={contractAddress}
         highestBet={data.highestBet}
         isMyTurn={data.nextTurn === 'Me'}
+        refresh={refresh}
       />
       {data.gameEnded ? (
         <Results
@@ -172,7 +177,7 @@ const GamePage = ({ params }: { params: { id: `0x${string}` } }) => {
           totalPlayers={data.playerCount}
         />
       ) : (
-        <DeclareResult contractAddress={contractAddress} />
+        <DeclareResult contractAddress={contractAddress} refresh={refresh} />
       )}
       <PlayerCards
         cards={data.playerCards}
@@ -188,6 +193,7 @@ const GamePage = ({ params }: { params: { id: `0x${string}` } }) => {
         deck={data.deck}
         isPending={data.isPendingToAddTokens}
         pendingCards={data.pendingCards}
+        refresh={refresh}
       />
       {data.currentRound === 'End' && !data.gameEnded ? (
         <ChooseCards
@@ -198,7 +204,7 @@ const GamePage = ({ params }: { params: { id: `0x${string}` } }) => {
       <div className='absolute bottom-48 right-12'>
         <Button
           className='flex h-10 w-10 flex-row items-center justify-center gap-2 rounded-full border-2 border-[#70AF8A] bg-[#204D39] !p-0 px-4 py-2 text-lg text-[#89d6a9]'
-          onClick={async () => await refetch()}
+          onClick={refresh}
         >
           <RefreshCcw className='text-lg text-[#89d6a9]' />
         </Button>

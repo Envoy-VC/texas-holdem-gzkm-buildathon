@@ -54,7 +54,7 @@ export const ChooseCards = ({ cards, contractAddress }: ChooseCardsProps) => {
     }
   };
   return (
-    <div className='absolute bottom-1/4 right-1/2 z-[3] mx-auto flex w-fit translate-x-1/2 flex-col gap-2'>
+    <div className='absolute bottom-[27.5%] right-1/2 z-[3] mx-auto flex w-fit translate-x-1/2 flex-col gap-2'>
       <div className='flex flex-row items-center gap-3'>
         {Array.from({ length: 5 }, (_, i) => i).map((i) => {
           return (
