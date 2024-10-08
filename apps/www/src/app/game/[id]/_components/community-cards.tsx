@@ -55,7 +55,6 @@ const CommunityCard = ({ contractAddress, cardIndex }: CommunityCardProps) => {
         });
         return card;
       } catch (error) {
-        console.log(error);
         return -1;
       }
     },

@@ -4,6 +4,7 @@ import { Hono } from 'hono';
 import type { PageConfig } from 'next';
 import { type Hex } from 'viem';
 
+export const maxDuration = 60;
 export const config: PageConfig = {
   api: {
     bodyParser: false,
