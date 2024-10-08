@@ -24,7 +24,7 @@ app.post('/get-masked-cards', async (c) => {
   const body = (await c.req.json()) as unknown;
   const gameKey = (body as { gameKey: [string, string] }).gameKey;
 
-  SE.init_prover_key(DECK_SIZE);
+  // SE.init_prover_key(DECK_SIZE);
   const gameKeyCompressed = SE.public_compress([gameKey[0], gameKey[1]]);
   const pkc = SE.refresh_joint_key(gameKeyCompressed, DECK_SIZE);
   const maskedDeck = SE.init_masked_cards(gameKeyCompressed, DECK_SIZE);
@@ -44,7 +44,7 @@ app.post('/first-shuffle', async (c) => {
   };
   const gameKey = b.gameKey;
 
-  SE.init_prover_key(DECK_SIZE);
+  // SE.init_prover_key(DECK_SIZE);
   const gameKeyCompressed = SE.public_compress([gameKey[0], gameKey[1]]);
   SE.refresh_joint_key(gameKeyCompressed, DECK_SIZE);
 

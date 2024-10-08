@@ -74,8 +74,12 @@ export const ShuffleOverlay = ({ contractAddress, refresh }: OverlayProps) => {
       });
 
       if (Number(totalShuffles) === 0) {
+        console.log('Start get masked cards.');
         const { maskedCards, pkc: _pkc } = await getMaskedCads(gameKey);
+        console.log('Done get masked cards.');
+        console.log('Start First Shuffle');
         const res = await firstShuffle(gameKey, maskedCards);
+        console.log('Done First Shuffle');
         const pkc = _pkc.map((p) => hexToBigInt(p, { size: 32 }));
         const newDeck = res.newDeck.map((o) =>
           o.map((i) => hexToBigInt(i, { size: 32 }))
