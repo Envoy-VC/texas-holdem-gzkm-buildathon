@@ -19,14 +19,16 @@ export const CommunityCards = ({
     <div className='absolute right-1/2 top-1/2 mx-auto flex w-fit translate-x-1/2 flex-col gap-2'>
       <div className='flex flex-row items-center gap-3'>
         {cards.map((i) => {
-          return (
-            <CommunityCard
-              key={i}
-              cardIndex={i}
-              contractAddress={contractAddress}
-              isHidden={cards[i] === 0}
-            />
-          );
+          if (i !== 0) {
+            return (
+              <CommunityCard
+                key={i}
+                cardIndex={i}
+                contractAddress={contractAddress}
+              />
+            );
+          }
+          return null;
         })}
       </div>
     </div>
@@ -35,15 +37,10 @@ export const CommunityCards = ({
 
 interface CommunityCardProps {
   contractAddress: `0x${string}`;
-  isHidden: boolean;
   cardIndex: number;
 }
 
-const CommunityCard = ({
-  contractAddress,
-  cardIndex,
-  isHidden,
-}: CommunityCardProps) => {
+const CommunityCard = ({ contractAddress, cardIndex }: CommunityCardProps) => {
   const data = useQuery({
     queryKey: ['community-card', contractAddress, cardIndex],
     queryFn: async () => {
@@ -60,7 +57,6 @@ const CommunityCard = ({
         return -1;
       }
     },
-    enabled: !isHidden,
   });
 
   return <PokerCard cardId={data.data ?? -1} className='w-20 rounded-lg' />;

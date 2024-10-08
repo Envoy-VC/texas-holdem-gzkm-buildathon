@@ -8,17 +8,24 @@ interface PokerCardProps extends ComponentProps<'img'> {
   cardId: number;
 }
 
-export const PokerCard = ({ cardId, className }: PokerCardProps) => {
+export const PokerCard = ({
+  cardId,
+  className,
+  style,
+  ...props
+}: PokerCardProps) => {
   const src = getPokerCardImage(cardId);
   return (
     <img
       alt='Poker Card'
-      className={cn('rounded-xl object-scale-down', className)}
+      className={cn('rounded-xl object-scale-down shadow-md', className)}
       src={src}
       style={{
         backgroundImage: `url(${src})`,
         aspectRatio: 63 / 88,
+        ...style,
       }}
+      {...props}
     />
   );
 };

@@ -7,218 +7,31 @@ import { truncate } from '~/lib/utils';
 import { gameConfig } from '~/lib/viem';
 
 import MotionNumber from 'motion-number';
-import { isAddress, zeroAddress } from 'viem';
+import { isAddress, toHex, zeroAddress } from 'viem';
 import { useAccount, useReadContracts } from 'wagmi';
 
 import { GameOverlay } from '~/components/overlays';
+import { Button } from '~/components/ui/button';
 
-import { GameStatistics, PlaceBet, Results } from './_components';
+import {
+  AddPendingCards,
+  GameStatistics,
+  PlaceBet,
+  PlayerCards,
+  Results,
+} from './_components';
+import { ChooseCards } from './_components/choose-cards';
 import { CommunityCards } from './_components/community-cards';
+import { DeclareResult } from './_components/declare-result';
+
+import { RefreshCcw } from 'lucide-react';
 
 const GamePage = ({ params }: { params: { id: `0x${string}` } }) => {
   const contractAddress = isAddress(params.id) ? params.id : zeroAddress;
 
   const { address } = useAccount();
 
-  // const { data, refetch } = useReadContracts({
-  //   contracts: [
-  //     {
-  //       ...gameConfig,
-  //       address: contractAddress,
-  //       functionName: '_currentRound',
-  //     },
-  //     {
-  //       ...gameConfig,
-  //       address: contractAddress,
-  //       functionName: 'getPotAmount',
-  //     },
-  //     {
-  //       ...gameConfig,
-  //       address: contractAddress,
-  //       functionName: '_highestBet',
-  //     },
-  //     {
-  //       ...gameConfig,
-  //       address: contractAddress,
-  //       functionName: 'getPendingPlayerRevealTokens',
-  //       args: [address ?? zeroAddress],
-  //     },
-  //     {
-  //       ...gameConfig,
-  //       address: contractAddress,
-  //       functionName: 'getPendingCommunityRevealTokens',
-  //       args: [address ?? zeroAddress],
-  //     },
-  //     {
-  //       ...gameConfig,
-  //       address: contractAddress,
-  //       functionName: 'nextPlayer',
-  //     },
-  //     {
-  //       ...gameConfig,
-  //       address: contractAddress,
-  //       functionName: 'getCommunityCards',
-  //     },
-  //     {
-  //       ...gameConfig,
-  //       address: contractAddress,
-  //       functionName: 'getPlayerCards',
-  //       args: [address ?? zeroAddress],
-  //     },
-  //     {
-  //       ...gameConfig,
-  //       address: contractAddress,
-  //       functionName: 'getAllWeights',
-  //       args: [],
-  //     },
-  //     {
-  //       ...gameConfig,
-  //       address: contractAddress,
-  //       functionName: 'winner',
-  //     },
-  //   ],
-  // });
-
-  // const { writeContractAsync } = useWriteContract();
-  // const [betAmount, setBetAmount] = useState('');
-  // const [addCards, setAddCards] = useState('');
-
-  // const onBet = async () => {
-  //   const id = toast.loading('Betting...');
-  //   try {
-  //     if (!address) {
-  //       throw new Error('Please connect wallet.');
-  //     }
-  //     if (betAmount === '') {
-  //       throw new Error('Please enter a valid bet amount.');
-  //     }
-  //     const hash = await writeContractAsync({
-  //       ...gameConfig,
-  //       address: contractAddress,
-  //       functionName: 'placeBet',
-  //       args: [BigInt(betAmount)],
-  //     });
-  //     await waitForTransactionReceipt(wagmiConfig, { hash });
-  //     toast.success('Bet placed successfully!', { id });
-  //     setBetAmount('');
-  //   } catch (error) {
-  //     toast.error('Error placing bet: ', { id });
-  //     console.error(error);
-  //   }
-  // };
-
-  // const onSubmitRevealTokens = async () => {
-  //   const id = toast.loading('Submitting RevealTokens...');
-  //   try {
-  //     if (!address) {
-  //       throw new Error('Please connect wallet.');
-  //     }
-  //     const pendingCommunity = data?.[4].result ?? [];
-  //     const pendingPlayer = data?.[3].result ?? [];
-  //     const pending = [...pendingCommunity, ...pendingPlayer].filter(
-  //       (x) => x !== 0
-  //     );
-  //     const deck = await getDeck(contractAddress);
-  //     const cards = [];
-  //     for (const i of pending) {
-  //       cards.push(deck[i] as [Hex, Hex, Hex, Hex]);
-  //     }
-  //     console.log({ pending });
-  //     const key = await getKey(address);
-  //     const tokens = await getRevealKeys(cards, key.sk);
-  //     console.log({ tokens });
-  //     const revealTokens = tokens.revealKeys.map((t) => ({
-  //       player: address,
-  //       token: {
-  //         x: hexToBigInt(t.card[0]),
-  //         y: hexToBigInt(t.card[1]),
-  //       },
-  //     }));
-  //     const hash = await writeContractAsync({
-  //       ...gameConfig,
-  //       address: contractAddress,
-  //       functionName: 'addMultipleRevealTokens',
-  //       args: [pending, revealTokens],
-  //     });
-  //     await waitForTransactionReceipt(wagmiConfig, { hash });
-  //     toast.success('Reveal Tokens Added Successfully!', { id });
-  //     setBetAmount('');
-  //   } catch (error) {
-  //     toast.error('Error ', { id });
-  //     console.error(error);
-  //   }
-  // };
-
-  // const onRevealCommunityCards = async () => {
-  //   const cards = (data?.[6].result ?? []).filter((x) => x !== 0);
-  //   const res = await readContract(wagmiConfig, {
-  //     ...gameConfig,
-  //     address: contractAddress,
-  //     functionName: 'revealMultipleCards',
-  //     args: [cards],
-  //   });
-  //   console.log(res);
-  // };
-
-  // const onRevealPlayerCards = async () => {
-  //   const cards = (data?.[7].result ?? []).filter((x) => x !== 0);
-  //   const deck = await getDeck(contractAddress);
-  //   const c: [Hex, Hex, Hex, Hex][] = [];
-  //   const tokens: [Hex, Hex][][] = [];
-  //   for await (const card of cards) {
-  //     const res = await readContract(wagmiConfig, {
-  //       ...gameConfig,
-  //       address: contractAddress,
-  //       functionName: 'getRevealTokens',
-  //       args: [card],
-  //     });
-  //     const rTokens = res
-  //       .filter((t) => t.player !== address)
-  //       .map(
-  //         (r) =>
-  //           [
-  //             toHex(r.token.x, { size: 32 }),
-  //             toHex(r.token.y, { size: 32 }),
-  //           ] as [Hex, Hex]
-  //       );
-  //     tokens.push(rTokens);
-  //     c.push(deck[card] as [Hex, Hex, Hex, Hex]);
-  //   }
-  //   console.log({
-  //     cards: c,
-  //     tokens,
-  //   });
-  //   const key = await getKey(address ?? zeroAddress);
-  //   const res = await unmaskCards(c, key.sk, tokens);
-  //   console.log(res);
-  // };
-
-  // const onDeclareWinner = async () => {
-  //   const res = await writeContractAsync({
-  //     ...gameConfig,
-  //     address: contractAddress,
-  //     functionName: 'declareWinner',
-  //     args: [],
-  //   });
-  //   await waitForTransactionReceipt(wagmiConfig, { hash: res });
-  // };
-
-  // const onChooseCards = async () => {
-  //   const cards = addCards.split(' ').map((c) => Number(c));
-  //   if (cards.length !== 3) {
-  //     toast.error('Please enter a valid list of 3 card indices.');
-  //     return;
-  //   }
-  //   const res = await writeContractAsync({
-  //     ...gameConfig,
-  //     address: contractAddress,
-  //     functionName: 'chooseCards',
-  //     args: [cards],
-  //   });
-  //   await waitForTransactionReceipt(wagmiConfig, { hash: res });
-  // };
-
-  const res = useReadContracts({
+  const { data: res, refetch } = useReadContracts({
     contracts: [
       {
         ...gameConfig,
@@ -260,21 +73,57 @@ const GamePage = ({ params }: { params: { id: `0x${string}` } }) => {
         address: contractAddress,
         functionName: 'getCommunityCards',
       },
+      {
+        ...gameConfig,
+        address: contractAddress,
+        functionName: 'getPlayerCards',
+        args: [address ?? zeroAddress],
+      },
+      {
+        ...gameConfig,
+        address: contractAddress,
+        functionName: 'getDeck',
+      },
+      {
+        ...gameConfig,
+        address: contractAddress,
+        functionName: 'getPendingPlayerRevealTokens',
+        args: [address ?? zeroAddress],
+      },
+      {
+        ...gameConfig,
+        address: contractAddress,
+        functionName: 'getPendingCommunityRevealTokens',
+        args: [address ?? zeroAddress],
+      },
     ],
   });
 
   const data = useMemo(() => {
-    const currentRound = getCurrentRound(res.data?.[0].result ?? 0);
-    const potAmount = Number(res.data?.[1].result ?? 0);
-    const highestBet = Number(res.data?.[2].result ?? 0);
-    const winnerAddress = res.data?.[3].result?.[0] ?? zeroAddress;
+    const currentRound = getCurrentRound(res?.[0].result ?? 0);
+    const potAmount = Number(res?.[1].result ?? 0);
+    const highestBet = Number(res?.[2].result ?? 0);
+    const winnerAddress = res?.[3].result?.[0] ?? zeroAddress;
     const nextTurn =
-      res.data?.[4].result?.addr === address
+      res?.[4].result?.addr === address
         ? 'Me'
-        : truncate(res.data?.[4].result?.addr ?? '', 8);
-    const playerCount = Number(res.data?.[5].result ?? 0);
-    const gameEnded = res.data?.[6].result?.[0] !== zeroAddress;
-    const communityCards = res.data?.[7].result?.map((c) => c) ?? [];
+        : truncate(res?.[4].result?.addr ?? '', 8);
+    const playerCount = Number(res?.[5].result ?? 0);
+    const gameEnded = res?.[6].result?.[0] !== zeroAddress;
+    const communityCards = res?.[7].result?.map((c) => c) ?? [];
+    const playerCards = res?.[8].result?.map((c) => c) ?? [];
+    const deck =
+      res?.[9].result?.map((c) => c.map((i) => toHex(i, { size: 32 }))) ?? [];
+    const pendingCommunityCards = (res?.[10].result ?? [])
+      .filter((c) => c !== 0)
+      .map((c) => c);
+
+    const pendingPlayerCards = (res?.[11].result ?? [])
+      .filter((c) => c !== 0)
+      .map((c) => c);
+
+    const pendingCards = [...pendingCommunityCards, ...pendingPlayerCards];
+    const isPendingToAddTokens = pendingCards.length > 0;
 
     return {
       currentRound,
@@ -285,11 +134,15 @@ const GamePage = ({ params }: { params: { id: `0x${string}` } }) => {
       playerCount,
       gameEnded,
       communityCards,
+      playerCards,
+      deck,
+      isPendingToAddTokens,
+      pendingCards,
     };
-  }, [address, res.data]);
+  }, [address, res]);
 
   return (
-    <div>
+    <div className=''>
       <GameOverlay contractAddress={contractAddress} />
       <div className='flex flex-col'>
         <div className='absolute right-1/2 top-24 mx-auto flex w-fit translate-x-1/2 flex-col gap-2'>
@@ -318,65 +171,38 @@ const GamePage = ({ params }: { params: { id: `0x${string}` } }) => {
           contractAddress={contractAddress}
           totalPlayers={data.playerCount}
         />
-      ) : null}
+      ) : (
+        <DeclareResult contractAddress={contractAddress} />
+      )}
+      <PlayerCards
+        cards={data.playerCards}
+        contractAddress={contractAddress}
+        deck={data.deck}
+      />
       <CommunityCards
         cards={data.communityCards}
         contractAddress={contractAddress}
       />
-      {/* <div className='flex w-fit flex-col gap-2'>
-        <div>Current Round: {data?.[0].result}</div>
-        <div>Pot Amount: {data?.[1].result?.toLocaleString()} USD</div>
-        <div>Highest Bet: {data?.[2].result?.toLocaleString()} USD</div>
-        <div>Community Cards: {data?.[6].result?.join(', ')}</div>
-        <div>Player Cards: {data?.[7].result?.join(', ')}</div>
-        <div>Pending Player Reveal Tokens: {data?.[3].result?.join(', ')}</div>
-        <div>
-          Pending Community Reveal Tokens: {data?.[4].result?.join(', ')}
-        </div>
-        <div>
-          Next Player: {data?.[5].result?.addr === address ? 'Me' : 'Other'}
-        </div>
-        <div>
-          Weights:{' '}
-          {data?.[8].result?.map((w) => w.weight.toLocaleString()).join(', ')}
-        </div>
-        <div>Winner: {data?.[9].result?.[0] === address ? 'Me' : 'Other'}</div>
-        <Button className='w-[10rem]' onClick={async () => await refetch()}>
-          Refetch
+      <AddPendingCards
+        contractAddress={contractAddress}
+        deck={data.deck}
+        isPending={data.isPendingToAddTokens}
+        pendingCards={data.pendingCards}
+      />
+      {data.currentRound === 'End' && !data.gameEnded ? (
+        <ChooseCards
+          cards={data.communityCards}
+          contractAddress={contractAddress}
+        />
+      ) : null}
+      <div className='absolute bottom-48 right-12'>
+        <Button
+          className='flex h-10 w-10 flex-row items-center justify-center gap-2 rounded-full border-2 border-[#70AF8A] bg-[#204D39] !p-0 px-4 py-2 text-lg text-[#89d6a9]'
+          onClick={async () => await refetch()}
+        >
+          <RefreshCcw className='text-lg text-[#89d6a9]' />
         </Button>
-        <div className='flex flex-row items-center gap-2 py-12'>
-          <Input
-            placeholder='Enter amount'
-            value={betAmount}
-            onChange={(e) => setBetAmount(e.target.value)}
-          />
-          <Button className='w-[10rem]' onClick={onBet}>
-            Bet
-          </Button>
-        </div>
-        <div className='flex flex-row items-center gap-2 py-12'>
-          <Input
-            placeholder='Enter amount'
-            value={addCards}
-            onChange={(e) => setAddCards(e.target.value)}
-          />
-          <Button className='w-[10rem]' onClick={onChooseCards}>
-            Choose Cards
-          </Button>
-        </div>
-        <Button className='w-[10rem]' onClick={onSubmitRevealTokens}>
-          Submit Reveal Tokens
-        </Button>
-        <Button className='w-[10rem]' onClick={onRevealCommunityCards}>
-          Reveal Community Cards
-        </Button>
-        <Button className='w-[10rem]' onClick={onRevealPlayerCards}>
-          Reveal Player Cards
-        </Button>
-        <Button className='w-[10rem]' onClick={onDeclareWinner}>
-          Declare Winner
-        </Button>
-      </div> */}
+      </div>
     </div>
   );
 };

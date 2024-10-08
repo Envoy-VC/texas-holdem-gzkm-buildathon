@@ -5,6 +5,7 @@ import { gameConfig, wagmiConfig } from '~/lib/viem';
 
 import { useQuery } from '@tanstack/react-query';
 import { readContract } from '@wagmi/core';
+import { zeroAddress } from 'viem';
 import { PokerCard } from '~/components';
 
 import { Dialog, DialogContent, DialogTrigger } from '~/components/ui/dialog';
@@ -52,7 +53,7 @@ const PlayerCardForPlayer = ({
   playerIndex,
 }: PlayerCardProps) => {
   const { data } = useQuery({
-    queryKey: ['player-card', contractAddress, playerIndex],
+    queryKey: ['result-player-card', contractAddress, playerIndex],
     queryFn: async () => {
       try {
         const playerAddr = await readContract(wagmiConfig, {
@@ -73,13 +74,18 @@ const PlayerCardForPlayer = ({
           functionName: '_weights',
           args: [BigInt(playerIndex)],
         });
-        return { cards, weight, playerAddress: playerAddr[0] };
+        console.log(cards);
+        return {
+          cards: cards.map((c) => c),
+          weight,
+          playerAddress: playerAddr[0],
+        };
       } catch (error) {
         console.log(error);
         return {
           cards: [-1, -1, -1, -1, -1],
-          weight: 0,
-          playerAddress: '0x0',
+          weight: BigInt(0),
+          playerAddress: zeroAddress,
         };
       }
     },
@@ -88,11 +94,11 @@ const PlayerCardForPlayer = ({
   return (
     <div className='flex flex-col gap-2'>
       <div className='flex flex-row justify-between text-base'>
-        <div>Player: {truncate(data?.playerAddress ?? '0', 8)}</div>
-        <div>Weight: {data?.weight.toLocaleString()}</div>
+        <div>Player: {truncate(data?.playerAddress ?? zeroAddress, 8)}</div>
+        <div>Weight: {(data?.weight ?? 0).toLocaleString()}</div>
       </div>
       <div className='item-center flex flex-row gap-2'>
-        {data?.cards.map((cardId) => (
+        {(data?.cards ?? []).map((cardId) => (
           <PokerCard key={cardId} cardId={cardId} className='w-24' />
         ))}
       </div>
