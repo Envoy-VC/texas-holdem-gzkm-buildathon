@@ -38,7 +38,6 @@ export const PlaceBet = ({
 
   const { mutateAsync, isPending } = useMutation({
     mutationFn: async () => {
-      const id = toast.loading('Placing Bet...');
       try {
         if (!address) {
           throw new Error('Please connect wallet.');
@@ -60,10 +59,9 @@ export const PlaceBet = ({
         });
         await waitForTransactionReceipt(wagmiConfig, { hash });
         await refresh();
-        toast.success('Bet placed successfully!', { id });
         setBetAmount('');
       } catch (error) {
-        toast.error(errorHandler(error), { id });
+        toast.error(errorHandler(error));
         console.error(error);
       }
     },
